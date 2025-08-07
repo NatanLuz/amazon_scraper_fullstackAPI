@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    
+    <!-- Garante que a página seja responsiva em cel,tablets, etc -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Título que irá exibir no navegador -->
+    <title>Amazon Product Scraper</title>
+    
+    <!-- Importando o arquivo local do Css -->
+    <link rel="stylesheet" href="./style.css">
+    
+    <!-- Para importar a font usamos do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!--Para importar os ícones da biblioteca Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Container principal da aplicação -->
+    <div class="container">
+
+        <!-- Cabeçalho da página -->
+        <header class="header">
+            <div class="header-content">
+                <!-- Logo com título -->
+                <div class="logo">
+                    <i class="fas fa-search"></i>
+                    <h1>Amazon Scraper</h1>
+                </div>
+
+                <!-- Subtítulo (descrição) -->
+                <p class="subtitle">Extraia produtos da Amazon de forma simples e rápida</p>
+            </div>
+        </header>
+
+        <!-- Conteúdo principal da aplicação -->
+        <main class="main-content">
+            
+            <!-- Seção que faz busca -->
+            <div class="search-section">
+                <div class="search-container">
+                    <div class="input-group">
+                        <!-- Ícone de busca -->
+                        <i class="fas fa-search search-icon"></i>
+
+                        <!-- Campo de entrada da palavra-chave -->
+                        <input 
+                            type="text" 
+                            id="keywordInput" 
+                            placeholder="Digite a palavra-chave do produto..."
+                            class="search-input"
+                        >
+
+                        <!-- Botão de busca com ícone -->
+                        <button id="searchBtn" class="search-btn">
+                            <i class="fas fa-rocket"></i>
+                            Buscar Produtos
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado de carregamento girar (spinner) -->
+            <div id="loadingState" class="loading-state hidden">
+                <div class="spinner"></div>
+                <p>Buscando produtos na Amazon...</p>
+            </div>
+
+            <!-- Status de erro (mensagem de falha) -->
+            <div id="errorState" class="error-state hidden">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Erro na busca</h3>
+                <p id="errorMessage">Ocorreu um erro ao buscar os produtos.</p>
+
+                <!-- Botão para tentar novamente -->
+                <button id="retryBtn" class="retry-btn">
+                    <i class="fas fa-redo"></i>
+                    Tentar Novamente
+                </button>
+            </div>
+
+            <!-- Seção de Resultados -->
+            <div id="resultsSection" class="results-section hidden">
+                <div class="results-header">
+                    <!-- Título da seção de resultados -->
+                    <h2 id="resultsTitle">Resultados da Busca</h2>
+
+                    <!-- Informações adicionais sobre os resultados -->
+                    <div class="results-info">
+                        <span id="resultsCount">0 produtos encontrados</span>
+                        <span id="searchKeyword"></span>
+                    </div>
+                </div>
+
+                <!-- Grade onde os produtos serão exibidos dinamicamente -->
+                <div id="productsGrid" class="products-grid">
+                    <!-- Os produtos serão inseridos aqui via JavaScript -->
+                </div>
+            </div>
+
+            <!-- Estado vazio (nenhum produto encontrado) -->
+            <div id="emptyState" class="empty-state hidden">
+                <i class="fas fa-search"></i>
+                <h3>Nenhum produto encontrado</h3>
+                <p>Tente usar uma palavra-chave diferente ou verifique sua conexão com a sua internet..</p>
+            </div>
+        </main>
+
+        <!-- Rodapé da página -->
+        <footer class="footer">
+            <p>2024 Amazon Scraper. Create By NatanLuz</p>
+        </footer>
+    </div>
+
+    <!-- Script JavaScript principal do projeto -->
+    <script type="module" src="./main.js"></script>
+</body>
+</html>
