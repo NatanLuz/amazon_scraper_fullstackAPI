@@ -236,7 +236,6 @@ O servidor exibe logs úteis:
 
 
 ## 📄 Licença
-
 Este projeto está sob a licença MIT. Veja o arquivo LICENSE para detalhes.
 
 ## Tecnologias Utilizadas
@@ -246,13 +245,3 @@ Este projeto está sob a licença MIT. Veja o arquivo LICENSE para detalhes.
 - **Design**: CSS Grid, Flexbox, Gradientes, Animações
 - **Ícones**: Font Awesome
 - **Fontes**: Google Fonts usada a Inter
-
-## Próximos Passos
-
-- [ ] Suporte a múltiplas páginas de resultados
-- [ ] Filtros por preço, rating, etc.
-- [ ] Cache de resultados
-- [ ] Exportação para CSV/JSON
-- [ ] Suporte a outras lojas online
-- [ ] Sistema de favoritos
-- [ ] Histórico de buscas
