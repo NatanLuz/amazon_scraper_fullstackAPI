@@ -1,5 +1,7 @@
 # Amazon Product Scraper
 
+0 vulnerability: https://imgur.com/a/0-vulnerability-tkVdDn5
+
 A Fullstack Web Application to extract Amazon product listings using Bun (backend) and Vite (frontend).
 
 ## READ : It's not a stack that I'll continue working on and developing, but I believe it helped me learn, study, and improve with APIs. I found the technology incredible, the backend and frontend working, it's incredible that programming gives us happiness. I failed in many projects that tried to build frontend and backend APIs, but this time it worked.
