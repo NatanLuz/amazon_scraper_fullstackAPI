@@ -249,3 +249,5 @@ This project is under the MIT license. See the LICENSE file for details.
 - **Design**: CSS Grid, Flexbox, Gradients, Animations
 - **Icons**: Font Awesome
 - **Fonts**: Google Fonts using Inter
+
+This project was much more than just a scraping tool. It represented my evolution as a developer, my learning with APIs, and my persistence in completing a full-stack project. Despite initial difficulties, I managed to integrate backend and frontend, build a user-friendly interface, and tackle real scraping challenges.
