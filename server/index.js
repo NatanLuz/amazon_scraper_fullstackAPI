@@ -79,12 +79,27 @@ function extractProductsFromHTML(html) {
       }
 
       // Extrair preço
-      const priceElement = container.querySelector('.a-price-whole') ||
-                          container.querySelector('.a-price .a-offscreen') ||
-                          container.querySelector('.a-price-current .a-offscreen');
+      const priceElementOffscreen = container.querySelector('.a-price .a-offscreen') ||
+                                   container.querySelector('.a-price-current .a-offscreen');
       let price = 'Preço não disponível';
-      if (priceElement) {
-        price = priceElement.textContent.trim();
+      if (priceElementOffscreen) {
+        price = priceElementOffscreen.textContent.trim();
+      } else {
+        const wholePartEl = container.querySelector('.a-price-whole');
+        const fractionPartEl = container.querySelector('.a-price-fraction');
+        const wholeRaw = wholePartEl ? wholePartEl.textContent.trim() : '';
+        const fractionRaw = fractionPartEl ? fractionPartEl.textContent.trim() : '';
+        if (wholeRaw) {
+          const digitsWhole = (wholeRaw || '').replace(/\D/g, '');
+          const digitsFraction = (fractionRaw || '').replace(/\D/g, '');
+          const fraction = digitsFraction.length > 0 ? digitsFraction.padEnd(2, '0').slice(0, 2) : '00';
+          const numeric = Number.parseInt(digitsWhole || '0', 10) + Number.parseInt(fraction || '0', 10) / 100;
+          if (!Number.isNaN(numeric) && numeric > 0) {
+            price = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(numeric);
+          } else {
+            price = `${wholeRaw}${fractionRaw ? ',' + fractionRaw : ''}`;
+          }
+        }
       }
 
       // Só adicionar produtos que tenham pelo menos título ou imagem
