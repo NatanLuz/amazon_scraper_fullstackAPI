@@ -9,9 +9,13 @@
     "dev:bun": "bun run --watch server/index.js",
     "start:bun": "bun run server/index.js",
     "build": "cd client && npm run build",
+    "build:prod": "npm run install-all && npm run build",
+    "deploy": "npm run build:prod && npm start",
     "install-client": "cd client && npm install",
     "install-server": "npm install",
-    "install-all": "npm install && npm run install-client"
+    "install-all": "npm install && npm run install-client",
+    "test-api": "curl http://localhost:3000/api/health",
+    "clean": "rm -rf public/assets && rm -f public/index.html"
   },
   "dependencies": {
     "express": "^4.18.2",

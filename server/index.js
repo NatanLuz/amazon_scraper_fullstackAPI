@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
 const { JSDOM } = require('jsdom');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,7 +10,9 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+
+// Servir arquivos estáticos do build de produção
+app.use(express.static(path.join(__dirname, '../public')));
 
 /**
  * Função para extrair dados de produtos da página de resultados da Amazon
@@ -218,8 +221,13 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Rota raiz
+// Rota raiz - servir aplicação frontend
 app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
+
+// Rota para API info
+app.get('/api', (req, res) => {
   res.json({
     message: 'Amazon Scraper API',
     endpoints: {
@@ -227,6 +235,15 @@ app.get('/', (req, res) => {
       '/api/health': 'Verificar status do servidor'
     }
   });
+});
+
+// Fallback para SPA - redirecionar todas as rotas não-API para index.html
+app.get('*', (req, res) => {
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(__dirname, '../public/index.html'));
+  } else {
+    res.status(404).json({ error: 'API endpoint não encontrado' });
+  }
 });
 
 // Iniciando o servidor
