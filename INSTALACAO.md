@@ -1,163 +1,222 @@
-# Guia de Instalação - Amazon Scraper
+# 🚀 Guia de Instalação - Amazon Scraper
 
-## Pré-requisitos
+Este guia fornece instruções completas para instalar e executar o Amazon Product Scraper.
 
-### Opção 1: Usando Node.js (Recomendado)
+## 📋 Pré-requisitos
 
-1. **Instale o Node.js**:
-   - Acesse o site: https://nodejs.org/
-   - Baixe a versão LTS (recomendo fazer isso)
-   - Execute o instalador e siga as instruções na ordem.
+Antes de começar, certifique-se de ter instalado:
 
-2. **Verifique sempre a instalação**:
-   ```bash
-   node --version
-   npm --version
-   ```
+- **Node.js** (versão 16 ou superior) - [Download](https://nodejs.org/)
+- **npm** (incluído com Node.js)
+- **Git** (opcional, para clonar o repositório)
 
-### Opção 2: Utilizando o Bun
+### Verificar instalação
 
-1. **Instale o Bun**:
-   - Windows: `powershell -c "irm bun.sh/install.ps1|iex"`
-   - macOS/Linux: `curl -fsSL https://bun.sh/install | bash`
-
-2. **Verifique a instalação**:
-   ```bash
-   bun --version
-   ```
-
-##  Instalação do Projeto
-
-### Passo 1: Clone ou baixe o projeto
-
-Se você tem o Git instalado(recomendo)(rápido prático):
 ```bash
-git clone <url-do-repositorio>
+node --version
+npm --version
+```
+
+## 📥 Instalação
+
+### Método 1: Instalação Automática (Recomendado)
+
+1. **Clone ou baixe o projeto**:
+```bash
+git clone <repository-url>
 cd amazon-scraper
 ```
 
-Ou baixe o ZIP e extraia para uma pasta.
-
-### Passo 2: Instale as dependências
-
-#### Com Node.js:
+2. **Execute o script de deploy**:
 ```bash
-# Instalar dependências para o backend
-npm install
-
-# Instalar dependências para o frontend
-cd client
-npm install
-cd ..
+./deploy.sh
 ```
 
-#### Com Bun:
+3. **Inicie o servidor**:
 ```bash
-# Instalar dependências para o backend
-bun install
-
-# Instalar dependências para o frontend
-cd client
-npm install
-cd ..
-```
-
-### Passo 3: Execute o projeto
-
-#### Desenvolvimento (Recomendado):
-
-**Terminal 1 - Backend:**
-```bash
-# Utilizando > Node.js
-npm run dev
-
-# Utilizando > Bun
-bun run dev
-```
-
-**Terminal 2 - Frontend:**
-```bash
-cd client
-npm run dev
-```
-
-#### Produção:
-
-```bash
-# Construir frontend
-npm run build
-
-# Iniciar servidor(backend)
 npm start
 ```
 
-## Acesse a aplicação
+### Método 2: Instalação Manual
 
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:3000
+1. **Instalar dependências do backend**:
+```bash
+npm install
+```
 
+2. **Instalar dependências do frontend**:
+```bash
+cd client
+npm install
+cd ..
+```
 
-## Testando a API
+3. **Ou usar o comando combinado**:
+```bash
+npm run install-all
+```
 
-Você pode testar a API diretamente:
+## 🔧 Configuração
+
+### Variáveis de Ambiente (Opcional)
+
+Copie o arquivo de exemplo:
+```bash
+cp .env.example .env
+```
+
+Edite as configurações conforme necessário:
+```env
+PORT=3000
+NODE_ENV=production
+```
+
+## 🚀 Executando a Aplicação
+
+### Desenvolvimento
+
+1. **Iniciar o backend**:
+```bash
+npm run dev
+```
+
+2. **Em outro terminal, iniciar o frontend**:
+```bash
+cd client
+npm run dev
+```
+
+Acesse:
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3000
+
+### Produção
+
+1. **Build da aplicação**:
+```bash
+npm run build
+```
+
+2. **Iniciar servidor**:
+```bash
+npm start
+```
+
+Acesse: http://localhost:3000
+
+## 📋 Scripts Disponíveis
+
+| Comando | Descrição |
+|---------|-----------|
+| `npm run dev` | Inicia servidor backend em modo desenvolvimento |
+| `npm start` | Inicia servidor em modo produção |
+| `npm run build` | Constrói frontend para produção |
+| `npm run build:prod` | Instala dependências e constrói para produção |
+| `npm run deploy` | Deploy completo (build + start) |
+| `npm run install-all` | Instala todas as dependências |
+| `npm run test-api` | Testa se a API está funcionando |
+| `npm run clean` | Limpa arquivos de build |
+
+## 🔍 Verificação
+
+### Testar API
 
 ```bash
-# Teste de saúde
 curl http://localhost:3000/api/health
+```
 
-# Teste de scraping
+### Testar Scraping
+
+```bash
 curl "http://localhost:3000/api/scrape?keyword=smartphone"
 ```
 
-## Solução de Problemas
+## 🐛 Solução de Problemas
 
-### Erro: "bun/npm não é reconhecido"
-
-**Solução**: Instale o Node.js ou Bun primeiro.
-
-### Erro: "Porta já em uso"
-
-**Solução**: 
-- Feche outros aplicativos que possam estar usando a porta 3000 ou 5173
-- Ou mude a porta no arquivo `server/index.js` (linha 8)
-
-### Erro: "CORS"
-
-**Solução**: O CORS já está configurado no projeto. Se ainda houver problemas, verifique se ambos os servidores estão rodando.
-
-### Erro: "Falha na conexão com a Amazon"
-
-**Solução**: 
-- Verifique sua conexão com a internet
-- O projeto retorna dados de exemplo em caso de erro
-- A Amazon pode bloquear requisições automatizadas
-
-## Comandos Úteis
-
+### Erro: "porta já em uso"
 ```bash
-# Verificar versões
-node --version
-npm --version
-bun --version
+# Encontrar processo usando a porta
+lsof -i :3000
 
-# Limpar cache (se necessário)
-npm cache clean --force
-
-# Para reinstalar as dependências .json 
-rm -rf node_modules package-lock.json
-npm install
-
-# Verificar portas em uso se falhar pode utilizar outra
-netstat -ano | findstr :3000
-netstat -ano | findstr :5173
+# Matar processo
+kill -9 <PID>
 ```
 
-## Suporte
+### Erro: "dependências não encontradas"
+```bash
+# Limpar cache e reinstalar
+npm cache clean --force
+rm -rf node_modules
+rm -rf client/node_modules
+npm run install-all
+```
 
-Se você encontrar problemas:
+### Erro: "build não encontrado"
+```bash
+# Reconstruir aplicação
+npm run clean
+npm run build
+```
 
-1. Verifique se todas as dependências estão instaladas
-2. Certifique-se de que as portas 3000 e 5173 estão livres
-3. Verifique sua conexão com a internet
-4. Consulte o README.md para mais detalhes
+## 📁 Estrutura de Arquivos
+
+```
+amazon-scraper/
+├── server/
+│   └── index.js          # Servidor Express
+├── client/
+│   ├── index.html        # Página principal
+│   ├── main.js           # JavaScript frontend
+│   ├── style.css         # Estilos CSS
+│   └── package.json      # Dependências frontend
+├── public/               # Build de produção
+├── deploy.sh            # Script de deploy
+├── .env.example         # Configurações de exemplo
+└── package.json         # Dependências backend
+```
+
+## 🔒 Segurança
+
+- ✅ Vulnerabilidades corrigidas
+- ✅ CORS configurado
+- ✅ Validação de entrada
+- ✅ Headers de segurança
+
+## 🌐 Deploy
+
+### Deploy Local
+```bash
+./deploy.sh
+npm start
+```
+
+### Deploy em Servidor
+1. Transfira os arquivos para o servidor
+2. Execute `./deploy.sh`
+3. Configure proxy reverso (nginx/apache) se necessário
+4. Configure PM2 para gerenciamento de processo (opcional)
+
+## 📞 Suporte
+
+Se encontrar problemas:
+
+1. Verifique os logs no console
+2. Teste a API com `npm run test-api`
+3. Verifique se todas as dependências estão instaladas
+4. Consulte a documentação no README.md
+
+## ✅ Checklist de Instalação
+
+- [ ] Node.js instalado
+- [ ] Dependências instaladas (`npm run install-all`)
+- [ ] Build criado (`npm run build`)
+- [ ] Servidor iniciado (`npm start`)
+- [ ] API testada (`npm run test-api`)
+- [ ] Frontend acessível (http://localhost:3000)
+
+---
+
+**Instalação bem-sucedida!** 🎉
+
+Sua aplicação Amazon Scraper está pronta para uso!
 
