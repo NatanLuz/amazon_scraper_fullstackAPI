@@ -93,7 +93,7 @@ function createStars(rating) {
     
     // Meia estrela 
     if (hasHalfStar) {
-        starsHTML += '<i class="fas fa-star-half-alt"></i>';
+        starsHTML += '<i class="fa-solid fa-star-half-stroke"></i>';
     }
     
     // Estrelas vazias
