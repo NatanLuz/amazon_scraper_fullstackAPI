@@ -1,4 +1,4 @@
-# Amazon Product Scraper
+# Amazon Product Scraper FULLSTACK PROJECT
 
 [![Bun](https://img.shields.io/badge/Bun-FFBB00?style=flat&logo=bun&logoColor=white)]()
 [![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)]()
