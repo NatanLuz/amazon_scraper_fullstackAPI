@@ -14,7 +14,7 @@
 
 ## IMPORTANT TO WATCH THIS:
 
-![Amazon Scraper Preview](https://i.imgur.com/LrlI6FJ.png)
+![Preview](https://i.imgur.com/NP9QCl3.jpeg)
 
 0 vulnerability: https://imgur.com/a/0-vulnerability-tkVdDn5
 
