@@ -12,9 +12,14 @@
 [![Font Awesome](https://img.shields.io/badge/Font_Awesome-528DD7?style=flat&logo=font-awesome&logoColor=white)]()
 [![Google Fonts](https://img.shields.io/badge/Google_Fonts-4285F4?style=flat&logo=google&logoColor=white)]()
 
+## IMPORTANT TO WATCH THIS:
+
+![Amazon Scraper Preview](https://i.imgur.com/LrlI6FJ.png)
+
 0 vulnerability: https://imgur.com/a/0-vulnerability-tkVdDn5
 
-A Fullstack Web Application to extract Amazon product listings using Bun (backend) and Vite (frontend).
+
+## A Fullstack Web Application to extract Amazon product listings using Bun (Backend) and Vite (Frontend)!
 
 ## READ : It's not a stack that I'll continue working on and developing, but I believe it helped me learn, study, and improve with APIs. I found the technology incredible, the backend and frontend working, it's incredible that programming gives us happiness. I failed in many projects that tried to build frontend and backend APIs, but this time it worked.
 
