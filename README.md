@@ -12,7 +12,7 @@
 [![Font Awesome](https://img.shields.io/badge/Font_Awesome-528DD7?style=flat&logo=font-awesome&logoColor=white)]()
 [![Google Fonts](https://img.shields.io/badge/Google_Fonts-4285F4?style=flat&logo=google&logoColor=white)]()
 
-## IMPORTANT TO WATCH THIS:
+## IMPORTANT TO WATCH THIS: https://imgur.com/projeto-fullstack-amazon-scraper-api-EDksRnx
 
 ![Preview](https://i.imgur.com/NP9QCl3.jpeg)
 
