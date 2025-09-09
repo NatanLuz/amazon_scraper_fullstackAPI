@@ -1,5 +1,8 @@
 # Amazon Scraper – Modern, robust and responsive full‑stack
 
+## This project was also built to learn and improve knowledge about APIs, backend, Node.js, etc.
+## It's also useful when searching for products.
+
 ### Backend
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)]
 [![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)]
