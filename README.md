@@ -1,17 +1,27 @@
 # Amazon Scraper – Modern, robust and responsive full‑stack
 
-[![Bun](https://img.shields.io/badge/Bun-FFBB00?style=flat&logo=bun&logoColor=white)]()
-[![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)]()
-[![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat&logo=axios&logoColor=white)]()
-[![JSDOM](https://img.shields.io/badge/JSDOM-FF0000?style=flat&logo=jsdom&logoColor=white)]()
-[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)]()
-[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)]()
-[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)]()
-[![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)]()
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)]()
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwind-css&logoColor=white)]()
-[![Font Awesome](https://img.shields.io/badge/Font_Awesome-528DD7?style=flat&logo=font-awesome&logoColor=white)]()
-[![Google Fonts](https://img.shields.io/badge/Google_Fonts-4285F4?style=flat&logo=google&logoColor=white)]()
+### Backend
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)]
+[![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)]
+[![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat&logo=axios&logoColor=white)]
+[![JSDOM](https://img.shields.io/badge/JSDOM-FF0000?style=flat&logo=jsdom&logoColor=white)]
+[![Helmet](https://img.shields.io/badge/Helmet-000000?style=flat&logo=npm&logoColor=white)]
+[![Compression](https://img.shields.io/badge/Compression-000000?style=flat&logo=npm&logoColor=white)]
+[![Morgan](https://img.shields.io/badge/Morgan-000000?style=flat&logo=npm&logoColor=white)]
+[![Rate Limit](https://img.shields.io/badge/Rate_Limit-000000?style=flat&logo=npm&logoColor=white)]
+
+### Frontend
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)]
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwind-css&logoColor=white)]
+[![Font Awesome](https://img.shields.io/badge/Font_Awesome-528DD7?style=flat&logo=font-awesome&logoColor=white)]
+[![Google Fonts](https://img.shields.io/badge/Google_Fonts-4285F4?style=flat&logo=google&logoColor=white)]
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)]
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)]
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)]
+
+### Testes (frontend)
+[![Vitest](https://img.shields.io/badge/Vitest-000000?style=flat&logo=vitest&logoColor=white)]
+[![JSDOM](https://img.shields.io/badge/JSDOM-FF0000?style=flat&logo=jsdom&logoColor=white)]
 
 
 ## Preview
