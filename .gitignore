@@ -1,0 +1,103 @@
+# Dependências e pacotes
+node_modules/
+bun.lockb
+
+# Saídas de build e distribuição
+dist/
+build/
+public/
+
+# Variáveis de ambiente
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# AsLogs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun-debug.log*
+
+# Dados de execução
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Diretório de cobertura de testes usado por ferramentas como o Istanbul e o nyc
+coverage/
+*.lcov
+
+# Cobertura de testes com nyc
+.nyc_output
+
+# Diretórios de dependências
+jspm_packages/
+
+# Diretório opcional de cache do npm
+.npm
+
+# Cache opcional do eslint porém resolvi não ignorar para facilitar debug
+.eslintcache
+
+# Histórico opcional do REPL
+.node_repl_history
+
+# Arquivo de saída do comando 'npm pack'
+*.tgz
+
+# Arquivo de integridade do Yarn (https://classic.yarnpkg.com/en/docs/cli/install/#toc-yarn-integrity)
+.yarn-integrity
+
+# Arquivo de variáveis de ambiente do dotenv 
+.env
+
+# Cache do parcel-bundler (https://parceljs.org/)
+.cache
+.parcel-cache
+
+# Saída de build do next.js (eu particularmente gosto de manter o .next no repositório para facilitar deploys simples)
+.next
+
+# Saída de build do nuxt.js
+.nuxt
+
+# Saída de build do vuepress
+.vuepress/dist
+
+# Diretórios do Serverless
+.serverless/
+
+# Cache do FuseBox
+.fusebox/
+
+# Arquivos locais do DynamoDB
+.dynamodb/
+
+# Arquivo de porta do TernJS
+.tern-port
+
+# Armazena versões do VSCode usadas para testar extensões
+.vscode-test
+
+# Arquivos de IDEs 
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Arquivos gerados pelo sistema operacional
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Arquivos temporários
+*.tmp
+*.temp

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Garante que a página seja responsiva em cel,tablets, etc -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Título que irá exibir no navegador -->
+    <title>Amazon Product Scraper</title>
+
+    <!-- Para importar a font usamos do Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!--Para importar os ícones da biblioteca Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Importando o arquivo local do Css -->
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body class="font-inter bg-gradient-to-br from-primary-500 via-primary-600 to-secondary-500 min-h-screen transition-colors duration-300">
+    <!-- Container principal da aplicação -->
+    <div class="container min-h-screen flex flex-col">
+
+        <!-- Cabeçalho da página -->
+        <header class="header bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-b border-white/20 dark:border-gray-700/20 shadow-lg">
+            <div class="header-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Top bar com toggle de tema e menu -->
+                <div class="grid grid-cols-3 items-center mb-4">
+                    <div class="justify-self-start hidden sm:block"></div>
+                    <div class="flex items-center justify-center">
+                        <!-- Logo com título centralizado -->
+                        <div class="logo flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-search text-white text-lg"></i>
+                            </div>
+                            <h1 class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">
+                                Amazon Scraper
+                            </h1>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 justify-self-end">
+                        <!-- Toggle de tema escuro -->
+                        <button id="themeToggle" class="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                            <i class="fas fa-moon dark:hidden text-gray-700 text-lg"></i>
+                            <i class="fas fa-sun hidden dark:block text-yellow-400 text-lg"></i>
+                        </button>
+                        <!-- Botão de menu (mobile) -->
+                        <button id="menuToggle" class="p-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300 shadow-lg hover:shadow-xl sm:hidden" aria-expanded="false" aria-controls="mobileMenu">
+                            <i class="fas fa-bars text-gray-700 dark:text-gray-300 text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile menu -->
+                <nav id="mobileMenu" class="hidden sm:flex flex-col sm:flex-row items-center justify-center gap-4 py-2">
+                    <a href="#" class="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 font-medium">Início</a>
+                    <a href="#resultsSection" class="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 font-medium">Resultados</a>
+                    <a href="/api/health" target="_blank" class="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 font-medium">Status API</a>
+                </nav>
+
+                <!-- Subtítulo (descrição) -->
+                <p class="subtitle text-gray-600 dark:text-gray-300 text-lg font-medium text-center">
+                    Extraia produtos da Amazon de forma simples e rápida
+                </p>
+            </div>
+        </header>
+
+        <!-- Conteúdo principal da aplicação -->
+        <main class="main-content flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+            <!-- Seção que faz busca -->
+            <div class="search-section mb-8">
+                <div class="search-container bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20 dark:border-gray-700/20">
+                    <div class="input-group flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+                        <!-- Campo de entrada da palavra-chave -->
+                        <div class="relative flex-1">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-primary-500 text-lg"></i>
+                            </div>
+                            <input
+                                type="text"
+                                id="keywordInput"
+                                placeholder="Digite a palavra-chave do produto..."
+                                class="search-input w-full pl-12 pr-4 py-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-2xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all duration-300 shadow-lg focus:shadow-xl"
+                            >
+                        </div>
+
+                        <!-- Botão de busca com ícone -->
+                        <button id="searchBtn" class="search-btn px-8 py-4 bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white font-semibold rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                            <i class="fas fa-rocket text-lg"></i>
+                            <span class="hidden sm:inline">Buscar Produtos</span>
+                            <span class="sm:hidden">Buscar</span>
+                        </button>
+                    </div>
+
+                    <!-- Filtros -->
+                    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div>
+                            <label for="minPriceInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Preço mínimo (R$)</label>
+                            <input id="minPriceInput" type="number" step="0.01" min="0" placeholder="0,00" class="w-full px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all duration-300" />
+                        </div>
+                        <div>
+                            <label for="maxPriceInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Preço máximo (R$)</label>
+                            <input id="maxPriceInput" type="number" step="0.01" min="0" placeholder="9999,99" class="w-full px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all duration-300" />
+                        </div>
+                        <div>
+                            <label for="minRatingInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Avaliação mínima</label>
+                            <select id="minRatingInput" class="w-full px-4 py-3 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:border-primary-500 focus:ring-4 focus:ring-primary-500/20 transition-all duration-300">
+                                <option value="0">Qualquer</option>
+                                <option value="3">3.0+</option>
+                                <option value="3.5">3.5+</option>
+                                <option value="4">4.0+</option>
+                                <option value="4.5">4.5+</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end gap-3">
+                            <label class="inline-flex items-center gap-2">
+                                <input id="primeOnlyInput" type="checkbox" class="w-4 h-4 text-primary-600 bg-gray-100 border-gray-300 rounded focus:ring-primary-500" />
+                                <span class="text-sm text-gray-700 dark:text-gray-300">Prime apenas</span>
+                            </label>
+                            <button id="applyFiltersBtn" class="ml-auto px-4 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl">Aplicar filtros</button>
+                            <button id="clearFiltersBtn" class="px-4 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-100 font-semibold rounded-xl transition-all duration-300">Limpar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel de Métricas -->
+            <section id="metricsPanel" class="mb-8 hidden">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="bg-white/95 dark:bg-gray-900/95 border border-white/20 dark:border-gray-700/20 rounded-2xl p-4 shadow">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Requisições</p>
+                        <p id="metricTotalRequests" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
+                    </div>
+                    <div class="bg-white/95 dark:bg-gray-900/95 border border-white/20 dark:border-gray-700/20 rounded-2xl p-4 shadow">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Scrapes</p>
+                        <p id="metricScrapeRequests" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
+                    </div>
+                    <div class="bg-white/95 dark:bg-gray-900/95 border border-white/20 dark:border-gray-700/20 rounded-2xl p-4 shadow">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Cache hits</p>
+                        <p id="metricCacheHits" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
+                    </div>
+                    <div class="bg-white/95 dark:bg-gray-900/95 border border-white/20 dark:border-gray-700/20 rounded-2xl p-4 shadow">
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Rate limited</p>
+                        <p id="metricRateLimited" class="text-2xl font-bold text-gray-900 dark:text-white">0</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Estado de carregamento girar (spinner) -->
+            <div id="loadingState" class="loading-state hidden text-center py-16 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/20">
+                <div class="spinner w-16 h-16 border-4 border-gray-200 dark:border-gray-700 border-t-primary-500 rounded-full animate-spin mx-auto mb-6"></div>
+                <div class="space-y-2">
+                    <p class="text-lg font-semibold text-gray-900 dark:text-white">Buscando produtos na Amazon...</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Isso pode levar alguns segundos</p>
+                </div>
+            </div>
+
+            <!-- Status de erro (mensagem de falha) -->
+            <div id="errorState" class="error-state hidden text-center py-16 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg rounded-3xl shadow-2xl border-2 border-red-200 dark:border-red-800">
+                <div class="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-exclamation-triangle text-3xl text-red-500"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Ops! Algo deu errado</h3>
+                <p id="errorMessage" class="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">Ocorreu um erro ao buscar os produtos.</p>
+
+                <!-- Botão para tentar novamente -->
+                <button id="retryBtn" class="retry-btn px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:-translate-y-1 mx-auto">
+                    <i class="fas fa-redo text-lg"></i>
+                    Tentar Novamente
+                </button>
+            </div>
+
+            <!-- Seção de Resultados -->
+            <div id="resultsSection" class="results-section hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/20 dark:border-gray-700/20">
+                <div class="results-header text-center mb-8">
+                    <!-- Título da seção de resultados -->
+                    <h2 id="resultsTitle" class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Resultados da Busca</h2>
+
+                    <!-- Informações adicionais sobre os resultados -->
+                    <div class="results-info flex flex-col sm:flex-row justify-center items-center gap-4 text-gray-600 dark:text-gray-400">
+                        <span id="resultsCount" class="px-4 py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full font-semibold">0 produtos encontrados</span>
+                        <span id="searchKeyword" class="text-sm"></span>
+                    </div>
+                </div>
+
+                <!-- Grade onde os produtos serão exibidos dinamicamente -->
+                <div id="productsGrid" class="products-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Os produtos serão inseridos aqui via JavaScript -->
+                </div>
+                <div id="infiniteScrollSentinel" class="h-10"></div>
+            </div>
+
+            <!-- Estado vazio (nenhum produto encontrado) -->
+            <div id="emptyState" class="empty-state hidden text-center py-16 bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/20">
+                <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-search text-3xl text-gray-400"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Nenhum produto encontrado</h3>
+                <p class="text-gray-600 dark:text-gray-400 max-w-md mx-auto">Tente usar uma palavra-chave diferente ou verifique sua conexão com a internet.</p>
+            </div>
+        </main>
+
+        <!-- Rodapé da página -->
+        <footer class="footer bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-white/20 dark:border-gray-700/20 text-center py-6">
+            <p class="text-gray-600 dark:text-gray-400 font-medium">© 2024 Amazon Scraper. Created by NatanLuz</p>
+        </footer>
+    </div>
+
+    <!-- Script JavaScript principal do projeto -->
+    <script type="module" src="./main.js"></script>
+</body>
+</html>

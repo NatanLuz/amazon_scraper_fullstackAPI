@@ -1,0 +1,37 @@
+{
+  "name": "amazon-scraper",
+  "version": "1.0.0",
+  "description": "Amazon product scraper with Bun backend and Vite frontend",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "node --watch server/index.js",
+    "start": "node server/index.js",
+    "dev:bun": "bun run --watch server/index.js",
+    "start:bun": "bun run server/index.js",
+    "build": "cd client; npm run build",
+    "build:prod": "npm run install-all && npm run build",
+    "deploy": "npm run build:prod && npm start",
+    "install-client": "cd client; npm install",
+    "install-server": "npm install",
+    "install-all": "npm install && npm run install-client",
+    "test-api": "curl http://localhost:3000/api/health",
+    "clean": "rm -rf public/assets && rm -f public/index.html"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "axios": "^1.7.7",
+    "jsdom": "^24.1.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0",
+    "express-rate-limit": "^7.4.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "keywords": ["amazon", "scraper", "bun", "vite"],
+  "author": "Your Name",
+  "license": "MIT"
+}

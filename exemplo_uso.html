@@ -1,0 +1,283 @@
+
+<html lang="pt-BR">
+
+<head>
+    <!-- sempre defina a codificação em utf 8 -->
+    <meta charset="UTF-8">
+    <!-- Configura a visualização para dispositivos móveis -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Título da aba do navegador -->
+    <title>Exemplo de Uso - Amazon Scraper API</title>
+
+    <!-- Estilos CSS internos nao criei uma .style porém aqui consegui organizar direitinho como deveria ficar-->
+    <style>
+        /* Estilo geral */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /*colocando estilo de containers de seções */
+        .container {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        /* colocando estilo para os blocos de código */
+        .code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Cores para diferentes tipos de avisos (mensagens) */
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .warning { color: #ffc107; }
+
+        /* Estilo para os botões simples */
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        /* Efeito de hover nos botões simples */
+        button:hover {
+            background: #0056b3;
+        }
+
+        /* Estilo do campo de entrada */
+        input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 200px;
+        }
+
+        /* Estilo para o resultado da API orgulhoso por que deu certo  */
+        .result {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Título principal da página -->
+    <h1> Exemplo de Uso - Amazon Scraper API</h1>
+    
+    <!-- Seção para teste da API -->
+    <div class="container">
+        <h2>Teste da API</h2>
+        <p>Este exemplo demonstra como usar a API do Amazon Scraper.</p>
+        
+        <!-- Campo de entrada + botões de teste -->
+        <div>
+            <input type="text" id="keywordInput" placeholder="Digite uma palavra-chave..." value="smartphone">
+            <button onclick="testAPI()">Testar API</button>
+            <button onclick="testHealth()">Testar Health Check</button>
+        </div>
+        
+        <!-- Local onde o resultado vai ser exibido -->
+        <div id="result"></div>
+    </div>
+
+    <!-- Seção com exemplos de uso da API -->
+    <div class="container">
+        <h2> Exemplos de Código</h2>
+        
+        <!-- Exemplo com JavaScript com > fetch -->
+        <h3>JavaScript (Fetch)</h3>
+        <div class="code">
+<!-- Comentário dentro do código JS -->
+
+// Buscar produtos
+const response = await fetch('/api/scrape?keyword=smartphone');
+const data = await response.json();
+
+if (data.success) {
+    console.log('Produtos encontrados:', data.products);
+} else {
+    console.error('Erro:', data.error);
+}
+        </div>
+
+        <!-- Exemplo com cURL via terminal -->
+        <h3>cURL</h3>
+        <div class="code">
+# Health check
+curl http://localhost:3000/api/health
+
+# Buscar produtos
+curl "http://localhost:3000/api/scrape?keyword=smartphone"
+        </div>
+
+        <!-- Exemplo com Python -->
+        <h3>Python</h3>
+        <div class="code">
+import requests
+
+# Buscar produtos
+response = requests.get('http://localhost:3000/api/scrape', 
+                       params={'keyword': 'smartphone'})
+data = response.json()
+
+if data['success']:
+    print(f"Encontrados {data['total']} produtos")
+    for product in data['products']:
+        print(f"- {product['title']}")
+else:
+    print(f"Erro: {data['error']}")
+        </div>
+    </div>
+
+    <!-- Exemplo da estrutura da resposta do JSON -->
+    <div class="container">
+        <h2>A Estrutura da Resposta</h2>
+        <div class="code">
+{
+  "success": true,
+  "keyword": "smartphone",
+  "products": [
+    {
+      "id": 1,
+      "title": "Smartphone XYZ",
+      "rating": "4.5 estrelas",
+      "reviews": "1,234",
+      "imageUrl": "https://...",
+      "productUrl": "https://amazon.com.br/...",
+      "price": "R$ 999,99"
+    }
+  ],
+  "total": 1,
+  "timestamp": "2024-01-01T12:00:00.000Z"
+}
+        </div>
+    </div>
+
+    <!-- Considerações sobre uso da API -->
+    <div class="container">
+        <h2> Considerações Importantes LEIAM !</h2>
+        <ul>
+            <li><span class="warning">Rate Limiting:</span> A Amazon pode limitar as requisições excessivas</li>
+            <li><span class="warning">Captcha:</span> Pode aparecer para requisições automatizadas</li>
+            <li><span class="warning">Termos de Serviço:</span> Respeite os termos da Amazon !</li>
+            <li><span class="success">Fallback:</span> Dados de exemplo são retornados caso de erro</li>
+        </ul>
+    </div>
+
+    <!-- Script desenvolvido para testar a API e o health check -->
+    <script>
+        // Função para testar a API com base na "palavra-chave"
+        async function testAPI() {
+            const keyword = document.getElementById('keywordInput').value;
+            const resultDiv = document.getElementById('result');
+            
+            // Validação: campo vazio
+            if (!keyword) {
+                resultDiv.innerHTML = '<div class="result error">Por favor, digite uma palavra-chave.</div>';
+                return;
+            }
+            
+            // Mensagem de carregamento....
+            resultDiv.innerHTML = '<div class="result">Buscando produtos...</div>';
+            
+            try {
+                // Faz a requisição para o > endpoint
+                const response = await fetch(`/api/scrape?keyword=${encodeURIComponent(keyword)}`);
+                const data = await response.json();
+                
+                // Em caso de sucesso ele vai exibir os "dados"
+                if (data.success) {
+                    let html = `<div class="result success">
+                        <h3>Sucesso!</h3>
+                        <p><strong>Palavra-chave:</strong> ${data.keyword}</p>
+                        <p><strong>Produtos encontrados:</strong> ${data.total}</p>
+                        <p><strong>Timestamp:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+                    `;
+                    
+                    // Lista os três primeiros produtos encontrados
+                    if (data.products && data.products.length > 0) {
+                        html += '<h4>Primeiros produtos:</h4><ul>';
+                        data.products.slice(0, 3).forEach(product => {
+                            html += `<li><strong>${product.title}</strong> - ${product.price}</li>`;
+                        });
+                        html += '</ul>';
+                    }
+                    
+                    html += '</div>';
+                    resultDiv.innerHTML = html;
+                } else {
+                    // Em caso de erro da API
+                    resultDiv.innerHTML = `<div class="result error">
+                        <h3> Erro</h3>
+                        <p>${data.error || 'Erro desconhecido'}</p>
+                    </div>`;
+                }
+            } catch (error) {
+                // Em caso de erro de rede ou conexão
+                resultDiv.innerHTML = `<div class="result error">
+                    <h3> Erro de Conexão</h3>
+                    <p>${error.message}</p>
+                    <p>Certifique-se de que o servidor está rodando em http://localhost:3000</p>
+                </div>`;
+            }
+        }
+
+        // Função para testar o endpoint de saúde do servidor
+        async function testHealth() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<div class="result">Verificando saúde do servidor...</div>';
+            
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `<div class="result success">
+                        <h3>Servidor Funcionando</h3>
+                        <p><strong>Status:</strong> ${data.message}</p>
+                        <p><strong>Timestamp:</strong> ${new Date(data.timestamp).toLocaleString()}</p>
+                    </div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="result error">
+                        <h3>Servidor com Problemas</h3>
+                        <p>${data.message || 'Erro desconhecido'}</p>
+                    </div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="result error">
+                    <h3>Servidor Indisponível</h3>
+                    <p>${error.message}</p>
+                    <p>Certifique-se de que o servidor está rodando em http://localhost:3000</p>
+                </div>`;
+            }
+        }
+
+        // Executa o health-check automaticamente ao carregar a página
+        // para garantir que o servidor está funcionando4
+        //Um health check (ou verificação de integridade, em português) é um processo usado para verificar se um sistema, serviço ou aplicação está funcionando corretamente.
+        window.addEventListener('load', testHealth);
+    </script>
+</body>
+</html>
+
+
+<!-- HTML FEITO EXPLICITAMENTE PARA EXPLICAR TODA A APLICAÇÃO DE FORMA QUE NA QUAL FIQUE FACIL RODAR NA SUA MAQUINA-->
