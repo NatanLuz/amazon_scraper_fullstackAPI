@@ -1,106 +1,165 @@
-# Amazon Scraper – Modern, robust and responsive full‑stack
-
-## This project was also built to learn and improve knowledge about APIs, backend, Node.js, etc.
-## It's also useful when searching for products.
-
-### Backend
-[![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)]
-[![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)]
-[![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat&logo=axios&logoColor=white)]
-[![JSDOM](https://img.shields.io/badge/JSDOM-FF0000?style=flat&logo=jsdom&logoColor=white)]
-[![Helmet](https://img.shields.io/badge/Helmet-000000?style=flat&logo=npm&logoColor=white)]
-[![Compression](https://img.shields.io/badge/Compression-000000?style=flat&logo=npm&logoColor=white)]
-[![Morgan](https://img.shields.io/badge/Morgan-000000?style=flat&logo=npm&logoColor=white)]
-[![Rate Limit](https://img.shields.io/badge/Rate_Limit-000000?style=flat&logo=npm&logoColor=white)]
-
-### Frontend
-[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)]
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwind-css&logoColor=white)]
-[![Font Awesome](https://img.shields.io/badge/Font_Awesome-528DD7?style=flat&logo=font-awesome&logoColor=white)]
-[![Google Fonts](https://img.shields.io/badge/Google_Fonts-4285F4?style=flat&logo=google&logoColor=white)]
-[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)]
-[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)]
-[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)]
-
-### Testes (frontend)
-[![Vitest](https://img.shields.io/badge/Vitest-000000?style=flat&logo=vitest&logoColor=white)]
-[![JSDOM](https://img.shields.io/badge/JSDOM-FF0000?style=flat&logo=jsdom&logoColor=white)]
-
-
-## Preview
-
-![Preview 1](https://i.imgur.com/y5aWKLi.png)
-
-![Preview 2](https://i.imgur.com/OXFpdoq.png)
-
-![Preview 3](https://i.imgur.com/ordYqb9.png)
-
-A complete full‑stack project showcasing a modern product search experience for Amazon Brazil, with a production‑ready backend and a performant, responsive frontend.
-
-It combines engineering best practices (security, caching, rate limits, observability) with modern UI/UX (Tailwind, Dark Mode, animations, filters, infinite scroll). Use it as a portfolio piece, learning base, or a foundation for advanced solutions.
-
-### Why this project matters
-- Demonstrates the full cycle: API → parsing (JSDOM) → modern UI → live metrics.
-- Production‑grade backend: rate limiting, cache, logs, Helmet, compression, health check, metrics, graceful shutdown.
-- Modern UX: Tailwind, Dark Mode, rich product cards, filters, animations, infinite scroll.
-- Clear separation of concerns, easy to understand and extend.
+🕷️ Amazon Product Scraper Inteligente
+API Full Stack para Coleta e Filtragem de Produtos por Avaliação e Preço
 
 ---
 
-## Architecture
-- `server/` (Node.js + Express)
-  - REST endpoints: `/api/scrape`, `/api/health`, `/api/metrics`.
-  - Scraping with `axios` + `jsdom` and robust CSS selectors.
-  - Security/perf: `helmet`, `compression`, `morgan`, `express-rate-limit`.
-  - In‑memory cache with TTL to reduce latency and load.
-  - Input validation, centralized error handling, graceful shutdown.
-- `client/` (Vite + Tailwind)
-  - Search with rich feedback (spinner, friendly errors).
-  - Product cards with hover, rating badge, external link.
-  - Persistent Dark Mode (localStorage), mobile‑first responsive grid.
-  - Filters (min/max price, min rating, Prime) and infinite scroll pagination.
-  - Metrics panel pulling `/api/metrics` (5s polling).
+## 📖 Sobre o Projeto
 
-Simplified flow:
-1) User searches → frontend calls `/api/scrape?keyword=...`.
-2) Backend fetches Amazon HTML, parses with `jsdom`, normalizes and returns data.
-3) Frontend renders in batches (better UX), supports filters and live metrics.
+Este projeto é uma aplicação Full Stack baseada em Web Scraping, desenvolvida para coletar, organizar e apresentar dados de produtos da Amazon Brasil de forma inteligente.
+
+A motivação é prática e pessoal: surgiu da dificuldade recorrente dentro da minha família para encontrar produtos com **boa avaliação**, **preço acessível** e **bom custo‑benefício**, sem precisar abrir dezenas de abas manualmente.
+
+Para resolver esse problema, foi criada uma **API scraper** que:
+
+- ✔ Coleta dados diretamente da Amazon a partir de uma palavra‑chave
+- ✔ Estrutura as informações dos produtos em um formato consistente
+- ✔ Permite filtrar produtos melhor avaliados e por faixa de preço
+- ✔ Facilita encontrar opções com melhor custo‑benefício
+- ✔ Entrega tudo isso em uma interface **moderna, responsiva e rápida**
+
+Além da utilidade real, o projeto foi construído para consolidar conhecimentos em:
+
+- Web Scraping estruturado
+- Arquitetura de APIs REST
+- Boas práticas de segurança e performance
+- Observabilidade e monitoramento
+- UX moderna em aplicações web
 
 ---
 
-## Getting started
-Prereq: Node 20.19+ or 22.12+ (recommended). On Windows, prefer nvm‑windows.
+## 🎯 Objetivos Técnicos
 
-1) Install dependencies
-```powershell
-cd C:\Users\User\Desktop\amazon_scraper_fullstackAPI-master
+- Construir um **scraper robusto, organizado e de fácil manutenção**
+- Demonstrar **boas práticas** no desenvolvimento de APIs Node.js com Express
+- Implementar **parsing confiável de HTML** usando JSDOM
+- Aplicar **técnicas de performance e cache em memória**
+- Criar uma **interface reativa** que consome dados de scraping em tempo quase real
+- Expor **métricas de uso e saúde** da API para facilitar monitoramento
+
+---
+
+## 🧩 Funcionalidades
+
+### 🔎 Scraping de Produtos
+
+- Coleta resultados da Amazon via requisição HTTP (Axios)
+- Parsing do HTML usando **JSDOM** com seletores bem definidos
+- Normalização e limpeza dos dados coletados
+- Retorno estruturado via **API REST** em JSON
+
+### ⭐ Filtros Inteligentes
+
+- Filtro por **avaliação mínima** do produto (rating)
+- Filtro por **faixa de preço** (mínimo e máximo)
+- Filtro para **produtos Prime**
+
+### ⚡ Experiência do Usuário
+
+- Scroll infinito para carregar mais produtos
+- Interface **responsiva** (mobile‑first)
+- Feedback visual de carregamento e erros
+- **Modo escuro** com preferência persistida
+
+### 📊 Monitoramento da API
+
+- Total de requisições recebidas
+- Quantidade de requisições de scraping
+- Uso de cache (cache hits)
+- Rate limiting em ação
+- Consumo de memória
+- Tempo de atividade do servidor (uptime)
+
+---
+
+## 🏗️ Arquitetura
+
+```text
+Frontend (Vite + Tailwind)
+        │
+        ▼
+API Scraper (Node.js + Express)
+        │
+        ▼
+Requisição HTTP (Axios)
+        │
+        ▼
+Parsing DOM (JSDOM)
+        │
+        ▼
+Estruturação e Retorno dos Dados
+```
+
+- **server/** – API em Node.js + Express
+  - Endpoints REST: `/api/scrape`, `/api/health`, `/api/metrics`
+  - Scraping com `axios` + `jsdom` e seletores resilientes
+  - Segurança e performance: `helmet`, `compression`, `morgan`, `express-rate-limit`
+  - **Cache em memória** com TTL para reduzir latência e chamadas repetidas
+  - Tratamento centralizado de erros e respostas padronizadas
+
+- **client/** – Frontend em Vite + Tailwind CSS
+  - Busca com campo de pesquisa e feedback visual
+  - Cartões de produto com título, preço, rating, reviews e link para a Amazon
+  - Grid responsivo, animações suaves e modo escuro persistente
+  - Filtros de avaliação, preço e Prime
+  - Scroll infinito para carregamento progressivo
+  - Painel de métricas consumindo `/api/metrics` em intervalo regular
+
+Fluxo resumido:
+
+1. O usuário digita um termo de busca no frontend
+2. O frontend chama `GET /api/scrape?keyword=...`
+3. O backend faz a requisição para a Amazon, interpreta o HTML com JSDOM
+4. Os dados de produto são normalizados e retornados em JSON
+5. O frontend renderiza em lotes, aplica filtros e atualiza métricas
+
+---
+
+## 🚀 Execução do Projeto
+
+### 🔧 Pré‑requisitos
+
+- Node.js **20+**
+
+### 📦 Instalação
+
+```bash
 npm install
 npm run install-client
 ```
 
-2) Development (two terminals)
-- Backend
-```powershell
+### 💻 Ambiente de Desenvolvimento
+
+**Backend:**
+
+```bash
 npm start
 ```
-- Frontend
-```powershell
+
+**Frontend:**
+
+```bash
 cd client
 npm run dev
 ```
-Open: `http://localhost:5173`
 
-3) Production (serve built frontend)
-```powershell
+Acesse o frontend em: `http://localhost:5173`
+
+### 🌐 Build e Execução (produção simples)
+
+```bash
 cd client
 npm run build
 cd ..
 npm start
 ```
-Open: `http://localhost:3000`
 
-4) Environment variables (optional – create `.env` at the root)
-```
+API disponível em: `http://localhost:3000`
+
+### ⚙️ Variáveis de Ambiente (opcional)
+
+Crie um arquivo `.env` na raiz do projeto, por exemplo:
+
+```env
 PORT=3000
 REQUEST_TIMEOUT_MS=12000
 CACHE_TTL_MS=60000
@@ -109,73 +168,117 @@ RATE_LIMIT_MAX=15
 
 ---
 
-## Endpoints
-- `GET /api/health` – basic health check.
-- `GET /api/metrics` – in‑memory metrics (totalRequests, scrapeRequests, cacheHits, rateLimited, memory, uptime).
-- `GET /api/scrape?keyword=keyboard` – returns products with `{ id, title, price, rating, reviews, imageUrl, productUrl }` and `total`.
+## 📡 Endpoints Principais
 
-Example (short):
+### Health Check
+
+- `GET /api/health` → Verifica se a API está saudável e respondendo.
+
+### Métricas
+
+- `GET /api/metrics` → Retorna métricas em memória, como:
+  - `totalRequests`, `scrapeRequests`, `cacheHits`, `rateLimited`
+  - uso de memória, uptime e outras informações de monitoramento
+
+### Scraping de Produtos
+
+- `GET /api/scrape?keyword=notebook`
+
+Resposta (exemplo simplificado):
+
 ```json
 {
   "success": true,
-  "keyword": "keyboard",
-  "products": [ { "id": 1, "title": "...", "price": "R$ 199,90" } ],
+  "keyword": "notebook",
+  "products": [
+    {
+      "id": 1,
+      "title": "Notebook ...",
+      "price": "R$ 2.499,90",
+      "rating": 4.7,
+      "reviews": 132,
+      "imageUrl": "https://...",
+      "productUrl": "https://www.amazon.com.br/..."
+    }
+  ],
   "total": 24,
-  "timestamp": "2024-..."
+  "timestamp": "2025-..."
 }
 ```
 
 ---
 
-## Key improvements
-- Frontend (UI/UX)
-  - Tailwind CSS with modern look, gradients and glassmorphism.
-  - Dark Mode toggle with persistence.
-  - Rich product cards, rating badge, “View on Amazon” button.
-  - Smooth loading spinner, friendly error messages, auto‑scroll to results.
-  - Filters: min/max price (BRL), min rating, Prime only.
-  - Infinite scroll with batched rendering.
-  - Live metrics panel (polling `/api/metrics`).
-- Backend (hardening)
-  - Helmet, compression, morgan (logs), CORS, configurable rate limiting.
-  - In‑memory cache with TTL and `cacheHits` counter.
-  - Input validation and clearer error messages.
-  - `/api/metrics` for observability.
-  - Graceful shutdown and centralized error handler.
+## 🧰 Tecnologias Utilizadas
+
+### Backend
+
+- Node.js
+- Express
+- Axios
+- JSDOM
+- Helmet
+- Morgan
+- Compression
+- Express Rate Limit
+
+### Frontend
+
+- Vite
+- Tailwind CSS
+- HTML5, CSS3, JavaScript
+- Ícones e fontes modernas
+
+### Testes
+
+- Vitest
+- JSDOM (ambiente de teste para DOM)
 
 ---
 
-## Technical notes
-- `jsdom` parsing is more reliable than regex for dynamic DOM; selectors may need updates as Amazon changes HTML.
-- In‑memory cache is simple and effective; for production, prefer Redis.
-- Rate limiting guards against abuse; tune via `.env`.
-- Tailwind enables fast, consistent UI iteration.
-- Infinite scroll improves perceived performance; classic pagination can be added if SEO matters.
+## 💼 Competências Demonstradas
+
+- Desenvolvimento de **scrapers estruturados** com JSDOM
+- Construção de **APIs REST** escaláveis com Node.js + Express
+- **Parsing avançado de HTML** e tratamento de seletores frágeis
+- **Otimização de performance** com cache em memória e compressão
+- Implementação de **segurança básica** (rate limiting, Helmet, validação)
+- **Monitoramento e observabilidade** via endpoint de métricas
+- Desenvolvimento **Full Stack** (frontend moderno + backend robusto)
+- UX com foco em **experiência real de busca de produtos**
 
 ---
 
-## Limitations & responsibility
-- Scraping may violate Terms of Service; use for education, controlled tests, or with authorization.
-- Amazon’s structure can change; selectors require maintenance.
-- Not designed to bypass anti‑bot systems or operate at massive scale.
+## ⚠️ Aviso Importante
+
+Este projeto foi desenvolvido para **fins educacionais** e demonstração técnica.
+
+- Mudanças no HTML da Amazon podem exigir manutenção nos seletores de scraping
+- O sistema **não foi projetado** para automação em larga escala
+- O uso de scraping pode estar sujeito a termos de uso da plataforma; utilize com responsabilidade
 
 ---
 
-## Roadmap ideas
-- Sorting (price, rating) and more filters (shipping, category).
-- Favorites and product comparison (localStorage or backend).
-- External cache (Redis) and queues (BullMQ) for scale.
-- Auth for a private metrics dashboard.
-- PWA and E2E tests (Playwright).
+## 📌 Próximos Passos (Ideias de Evolução)
+
+- Ordenação por preço, avaliação e número de reviews
+- Mais filtros (categoria, frete, prazo de entrega)
+- Persistência de favoritos e comparação de produtos
+- Uso de Redis para cache distribuído
+- Dashboard autenticado para métricas
+- PWA e testes E2E com Playwright ou Cypress
 
 ---
 
-## Tech stack
-- Backend: Node.js, Express, Axios, JSDOM, Helmet, Compression, Morgan, Rate Limit.
-- Frontend: Vite, Tailwind CSS, Font Awesome, Google Fonts (Inter).
-- Tests (frontend): Vitest + jsdom.
+## 📸 Preview
+
+![Preview 1](https://i.imgur.com/y5aWKLi.png)
+
+![Preview 2](https://i.imgur.com/OXFpdoq.png)
+
+![Preview 3](https://i.imgur.com/ordYqb9.png)
 
 ---
 
-## License
-MIT – use freely with attribution. Respect Amazon’s policies.
+## 📜 Licença
+
+Projeto de uso livre para fins educacionais e portfólio. Respeite sempre as políticas e termos de uso da Amazon.
