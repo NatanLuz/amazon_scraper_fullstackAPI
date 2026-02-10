@@ -1,4 +1,4 @@
-🕷️ Amazon Product Scraper Inteligente
+## Amazon Product Scraper Inteligente
 API Full Stack para Coleta e Filtragem de Produtos por Avaliação e Preço
 
 ---
@@ -255,17 +255,6 @@ Este projeto foi desenvolvido para **fins educacionais** e demonstração técni
 - Mudanças no HTML da Amazon podem exigir manutenção nos seletores de scraping
 - O sistema **não foi projetado** para automação em larga escala
 - O uso de scraping pode estar sujeito a termos de uso da plataforma; utilize com responsabilidade
-
----
-
-## 📌 Próximos Passos (Ideias de Evolução)
-
-- Ordenação por preço, avaliação e número de reviews
-- Mais filtros (categoria, frete, prazo de entrega)
-- Persistência de favoritos e comparação de produtos
-- Uso de Redis para cache distribuído
-- Dashboard autenticado para métricas
-- PWA e testes E2E com Playwright ou Cypress
 
 ---
 
