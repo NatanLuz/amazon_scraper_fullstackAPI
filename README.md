@@ -248,16 +248,6 @@ Resposta (exemplo simplificado):
 
 ---
 
-## ⚠️ Aviso Importante
-
-Este projeto foi desenvolvido para **fins educacionais** e demonstração técnica.
-
-- Mudanças no HTML da Amazon podem exigir manutenção nos seletores de scraping
-- O sistema **não foi projetado** para automação em larga escala
-- O uso de scraping pode estar sujeito a termos de uso da plataforma; utilize com responsabilidade
-
----
-
 ## 📸 Preview
 
 ![Preview 1](https://i.imgur.com/y5aWKLi.png)
