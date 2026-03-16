@@ -260,4 +260,4 @@ Resposta (exemplo simplificado):
 
 ## 📜 Licença
 
-Projeto de uso livre para fins educacionais e portfólio. Respeite sempre as políticas e termos de uso da Amazon.
+Projeto de uso própio para solução de problemas para encontrar produtos, baratos e bem avaliados, porém é livre para uso, teste e inclusive parceria.
