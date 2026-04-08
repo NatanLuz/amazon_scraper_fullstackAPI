@@ -3,7 +3,7 @@ API Full Stack para Coleta e Filtragem de Produtos por Avaliação e Preço
 
 ---
 
-## 📖 Sobre o Projeto
+## 📖 Descrição sobre o Projeto
 
 Este projeto é uma aplicação Full Stack baseada em Web Scraping, desenvolvida para coletar, organizar e apresentar dados de produtos da Amazon Brasil de forma inteligente.
 
