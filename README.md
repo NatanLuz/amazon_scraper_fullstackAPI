@@ -1,133 +1,160 @@
-## Amazon Product Scraper Inteligente
-API Full Stack para Coleta e Filtragem de Produtos por Avaliação e Preço
+# Amazon Product Scraper Inteligente 
+
+Aplicação para coleta, filtragem e visualização de produtos da Amazon Brasil, desenvolvida com foco em scraping estruturado, performance, observabilidade e experiência do usuário.
+
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat\&logo=node.js\&logoColor=white)]()
+[![Express](https://img.shields.io/badge/Express-000000?style=flat\&logo=express\&logoColor=white)]()
+[![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat)]()
+[![JSDOM](https://img.shields.io/badge/JSDOM-000000?style=flat)]()
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat\&logo=vite\&logoColor=white)]()
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=flat\&logo=tailwind-css\&logoColor=white)]()
 
 ---
 
-## 📖 Descrição sobre o Projeto
+## 🎯 Proposta de Valor
 
-Este projeto é uma aplicação Full Stack baseada em Web Scraping, desenvolvida para coletar, organizar e apresentar dados de produtos da Amazon Brasil de forma inteligente.
+Automatizar a descoberta de produtos com melhor custo-benefício na Amazon, centralizando coleta, filtragem e análise em uma única aplicação performática e observável.
 
-A motivação é prática e pessoal: surgiu da dificuldade recorrente dentro da minha família para encontrar produtos com **boa avaliação**, **preço acessível** e **bom custo‑benefício**, sem precisar abrir dezenas de abas manualmente.
+**Benefícios principais:**
 
-Para resolver esse problema, foi criada uma **API scraper** que:
-
-- ✔ Coleta dados diretamente da Amazon a partir de uma palavra‑chave
-- ✔ Estrutura as informações dos produtos em um formato consistente
-- ✔ Permite filtrar produtos melhor avaliados e por faixa de preço
-- ✔ Facilita encontrar opções com melhor custo‑benefício
-- ✔ Entrega tudo isso em uma interface **moderna, responsiva e rápida**
-
-Além da utilidade real, o projeto foi construído para consolidar conhecimentos em:
-
-- Web Scraping estruturado
-- Arquitetura de APIs REST
-- Boas práticas de segurança e performance
-- Observabilidade e monitoramento
-- UX moderna em aplicações web
+* Coleta automatizada de produtos via scraping
+* Filtros inteligentes por avaliação, preço e Prime
+* Redução de esforço manual na comparação de produtos
+* Interface rápida e responsiva com feedback em tempo real
+* API monitorável com métricas de uso e saúde
 
 ---
 
-## 🎯 Objetivos Técnicos
+## ⚙️ Funcionalidades
 
-- Construir um **scraper robusto, organizado e de fácil manutenção**
-- Demonstrar **boas práticas** no desenvolvimento de APIs Node.js com Express
-- Implementar **parsing confiável de HTML** usando JSDOM
-- Aplicar **técnicas de performance e cache em memória**
-- Criar uma **interface reativa** que consome dados de scraping em tempo quase real
-- Expor **métricas de uso e saúde** da API para facilitar monitoramento
+### Scraping e Dados
 
----
+* Coleta de produtos via requisições HTTP (Axios)
+* Parsing de HTML com JSDOM
+* Normalização e estruturação de dados
+* Retorno padronizado via API REST (JSON)
 
-## 🧩 Funcionalidades
+### Filtros Inteligentes
 
-### 🔎 Scraping de Produtos
+* Avaliação mínima (rating)
+* Faixa de preço (mínimo e máximo)
+* Filtro de produtos Prime
 
-- Coleta resultados da Amazon via requisição HTTP (Axios)
-- Parsing do HTML usando **JSDOM** com seletores bem definidos
-- Normalização e limpeza dos dados coletados
-- Retorno estruturado via **API REST** em JSON
+### Experiência do Usuário
 
-### ⭐ Filtros Inteligentes
+* Interface responsiva (mobile-first)
+* Scroll infinito para carregamento progressivo
+* Feedback visual de carregamento e erros
+* Modo escuro com persistência
 
-- Filtro por **avaliação mínima** do produto (rating)
-- Filtro por **faixa de preço** (mínimo e máximo)
-- Filtro para **produtos Prime**
+### Observabilidade
 
-### ⚡ Experiência do Usuário
-
-- Scroll infinito para carregar mais produtos
-- Interface **responsiva** (mobile‑first)
-- Feedback visual de carregamento e erros
-- **Modo escuro** com preferência persistida
-
-### 📊 Monitoramento da API
-
-- Total de requisições recebidas
-- Quantidade de requisições de scraping
-- Uso de cache (cache hits)
-- Rate limiting em ação
-- Consumo de memória
-- Tempo de atividade do servidor (uptime)
+* Métricas de requisição e scraping
+* Monitoramento de cache (cache hits)
+* Uptime da aplicação
+* Uso de memória
+* Rate limiting monitorado
 
 ---
 
-## 🏗️ Arquitetura
+## 🏗️ Arquitetura / Estrutura
+
+Arquitetura baseada em separação clara entre frontend e API:
 
 ```text
 Frontend (Vite + Tailwind)
         │
         ▼
-API Scraper (Node.js + Express)
+API (Node.js + Express)
         │
         ▼
-Requisição HTTP (Axios)
+HTTP Client (Axios)
         │
         ▼
 Parsing DOM (JSDOM)
         │
         ▼
-Estruturação e Retorno dos Dados
+Normalização e retorno JSON
 ```
 
-- **server/** – API em Node.js + Express
-  - Endpoints REST: `/api/scrape`, `/api/health`, `/api/metrics`
-  - Scraping com `axios` + `jsdom` e seletores resilientes
-  - Segurança e performance: `helmet`, `compression`, `morgan`, `express-rate-limit`
-  - **Cache em memória** com TTL para reduzir latência e chamadas repetidas
-  - Tratamento centralizado de erros e respostas padronizadas
+### Backend (`server/`)
 
-- **client/** – Frontend em Vite + Tailwind CSS
-  - Busca com campo de pesquisa e feedback visual
-  - Cartões de produto com título, preço, rating, reviews e link para a Amazon
-  - Grid responsivo, animações suaves e modo escuro persistente
-  - Filtros de avaliação, preço e Prime
-  - Scroll infinito para carregamento progressivo
-  - Painel de métricas consumindo `/api/metrics` em intervalo regular
+* API REST (`/api/scrape`, `/api/health`, `/api/metrics`)
+* Scraping com Axios + JSDOM
+* Cache em memória com TTL
+* Middlewares de segurança e performance:
 
-Fluxo resumido:
+  * `helmet`
+  * `compression`
+  * `morgan`
+  * `express-rate-limit`
+* Tratamento centralizado de erros
 
-1. O usuário digita um termo de busca no frontend
-2. O frontend chama `GET /api/scrape?keyword=...`
-3. O backend faz a requisição para a Amazon, interpreta o HTML com JSDOM
-4. Os dados de produto são normalizados e retornados em JSON
-5. O frontend renderiza em lotes, aplica filtros e atualiza métricas
+### Frontend (`client/`)
+
+* Interface com Vite + Tailwind CSS
+* Consumo da API via fetch
+* Grid responsivo de produtos
+* Filtros dinâmicos
+* Painel de métricas em tempo real
 
 ---
 
-## 🚀 Execução do Projeto
+## 🔐 Segurança
 
-### 🔧 Pré‑requisitos
+* Rate limiting para mitigação de abuso
+* Headers de segurança via `helmet`
+* Validação de entrada de parâmetros
+* Cache para reduzir volume de requisições externas
+* Tratamento de erros e respostas padronizadas
 
-- Node.js **20+**
+> Observação: o projeto depende de scraping de terceiros, podendo sofrer alterações caso a estrutura da Amazon seja modificada.
 
-### 📦 Instalação
+---
+
+## 🧰 Stack Tecnológica
+
+### Backend
+
+* Node.js
+* Express
+* Axios
+* JSDOM
+* Helmet
+* Morgan
+* Compression
+* Express Rate Limit
+
+### Frontend
+
+* Vite
+* Tailwind CSS
+* JavaScript (Vanilla)
+
+### Testes
+
+* Vitest
+* JSDOM
+
+---
+
+## 🚀 Instalação
+
+### Pré-requisitos
+
+* Node.js 20+
+
+### Passos
 
 ```bash
+git clone https://github.com/seu-usuario/amazon-scraper.git
+cd amazon-scraper
+
 npm install
 npm run install-client
 ```
 
-### 💻 Ambiente de Desenvolvimento
+### Execução (desenvolvimento)
 
 **Backend:**
 
@@ -142,29 +169,23 @@ cd client
 npm run dev
 ```
 
-Acesse o frontend em: `http://localhost:5173`
+Acesse:
 
-### 🌐 Build e Execução (produção simples)
+* Frontend: http://localhost:5173
+* API: http://localhost:3000
 
-```bash
-cd client
-npm run build
-cd ..
-npm start
-```
+---
 
-API disponível em: `http://localhost:3000`
+## 🧪 Testes Rápidos
 
-### ⚙️ Variáveis de Ambiente (opcional)
+**Checklist funcional:**
 
-Crie um arquivo `.env` na raiz do projeto, por exemplo:
-
-```env
-PORT=3000
-REQUEST_TIMEOUT_MS=12000
-CACHE_TTL_MS=60000
-RATE_LIMIT_MAX=15
-```
+1. Realizar busca por palavra-chave
+2. Validar retorno de produtos via API
+3. Aplicar filtros (preço, rating, Prime)
+4. Verificar funcionamento do scroll infinito
+5. Validar métricas em `/api/metrics`
+6. Testar cache (repetir requisições)
 
 ---
 
@@ -172,92 +193,33 @@ RATE_LIMIT_MAX=15
 
 ### Health Check
 
-- `GET /api/health` → Verifica se a API está saudável e respondendo.
+```
+GET /api/health
+```
 
 ### Métricas
 
-- `GET /api/metrics` → Retorna métricas em memória, como:
-  - `totalRequests`, `scrapeRequests`, `cacheHits`, `rateLimited`
-  - uso de memória, uptime e outras informações de monitoramento
+```
+GET /api/metrics
+```
 
-### Scraping de Produtos
+### Scraping
 
-- `GET /api/scrape?keyword=notebook`
-
-Resposta (exemplo simplificado):
-
-```json
-{
-  "success": true,
-  "keyword": "notebook",
-  "products": [
-    {
-      "id": 1,
-      "title": "Notebook ...",
-      "price": "R$ 2.499,90",
-      "rating": 4.7,
-      "reviews": 132,
-      "imageUrl": "https://...",
-      "productUrl": "https://www.amazon.com.br/..."
-    }
-  ],
-  "total": 24,
-  "timestamp": "2025-..."
-}
+```
+GET /api/scrape?keyword=notebook
 ```
 
 ---
 
-## 🧰 Tecnologias Utilizadas
-
-### Backend
-
-- Node.js
-- Express
-- Axios
-- JSDOM
-- Helmet
-- Morgan
-- Compression
-- Express Rate Limit
-
-### Frontend
-
-- Vite
-- Tailwind CSS
-- HTML5, CSS3, JavaScript
-- Ícones e fontes modernas
-
-### Testes
-
-- Vitest
-- JSDOM (ambiente de teste para DOM)
-
----
-
-## 💼 Competências Demonstradas
-
-- Desenvolvimento de **scrapers estruturados** com JSDOM
-- Construção de **APIs REST** escaláveis com Node.js + Express
-- **Parsing avançado de HTML** e tratamento de seletores frágeis
-- **Otimização de performance** com cache em memória e compressão
-- Implementação de **segurança básica** (rate limiting, Helmet, validação)
-- **Monitoramento e observabilidade** via endpoint de métricas
-- Desenvolvimento **Full Stack** (frontend moderno + backend robusto)
-- UX com foco em **experiência real de busca de produtos**
-
----
-
-## 📸 Preview
+## 📸 Screenshots
 
 ![Preview 1](https://i.imgur.com/y5aWKLi.png)
-
 ![Preview 2](https://i.imgur.com/OXFpdoq.png)
-
 ![Preview 3](https://i.imgur.com/ordYqb9.png)
 
 ---
 
-## 📜 Licença
+## 👤 Autor
 
-Projeto de uso própio para solução de problemas para encontrar produtos, baratos e bem avaliados, porém é livre para uso, teste e inclusive parceria.
+**Natan Da Luz**
+Desenvolvedor de Software
