@@ -1,4 +1,6 @@
-# Amazon Product Scraper Inteligente 
+## Amazon Product Scraper Inteligente 
+
+Ache produtos mais baratos, com boas avaliações, e tudo isso filtrado !
 
 Aplicação para coleta, filtragem e visualização de produtos da Amazon Brasil, desenvolvida com foco em scraping estruturado, performance, observabilidade e experiência do usuário.
 
