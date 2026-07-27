@@ -196,15 +196,6 @@ npm start
 3. Configure proxy reverso (nginx/apache) se necessário
 4. Configure PM2 para gerenciamento de processo (opcional)
 
-## 📞 Suporte
-
-Se encontrar problemas:
-
-1. Verifique os logs no console
-2. Teste a API com `npm run test-api`
-3. Verifique se todas as dependências estão instaladas
-4. Consulte a documentação no README.md
-
 ## ✅ Checklist de Instalação
 
 - [ ] Node.js instalado
