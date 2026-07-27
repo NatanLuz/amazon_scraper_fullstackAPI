@@ -177,7 +177,7 @@ amazon-scraper/
 
 ## 🔒 Segurança
 
-- ✅ Vulnerabilidades corrigidas
+- ✅ Vulnerabilidades Corrigidas
 - ✅ CORS configurado
 - ✅ Validação de entrada
 - ✅ Headers de segurança
