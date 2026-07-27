@@ -1,6 +1,6 @@
 /**
- * // Frontend
- * Gerenciando a interface do usuário e comunicação com a API
+ * // Construindo o Frontend
+ * Gerenciando a interface do usuário e comunicação com API
  */
 
 // Elementos do DOM necessários
@@ -83,7 +83,7 @@ class ThemeManager {
 }
 
 /**
- * Função que mostra e esconde elementos
+ * Função que mostra e esconde os elementos
  */
 function toggleElement(element, show) {
     if (show) {
@@ -124,7 +124,7 @@ function hideLoading() {
  * Função para mostrar os erros
  */
 function showError(message) {
-    // Mensagens de erro mais amigáveis
+    // Mensagens de erros durante falha
     const friendlyMessages = {
         'Failed to fetch': 'Não conseguimos conectar ao servidor. Verifique sua conexão com a internet e tente novamente.',
         'HTTP 429': 'Muitas requisições foram feitas. Por favor, aguarde alguns minutos antes de tentar novamente.',
