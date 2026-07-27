@@ -16,21 +16,22 @@ const REQUEST_TIMEOUT_MS = Number(process.env.REQUEST_TIMEOUT_MS) || 12000;
 const CACHE_TTL_MS_ENV = Number(process.env.CACHE_TTL_MS) || 60_000;
 const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX) || 15;
 
-// Middleware
+// Helmet cuida de uns headers de segurança padrão pra gente não ter que fazer na mão
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
 
-// Allow JSON requests
+// Limite de 100kb no body pra evitar payload gigante
 app.use(express.json({ limit: '100kb' }));
 
-// Basic request logging
+// Log de cada requisição no console, ajuda a debugar em dev
 app.use(morgan('dev'));
 
-// Response compression
+// Comprime as respostas antes de mandar pro cliente
 app.use(compression());
 
-// CORS - allow local dev client and same-origin
+// Libera CORS pro front local (vite roda na 5173) e no fim libera geral mesmo,
+// porque isso aqui é só uma demo
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
@@ -44,11 +45,11 @@ app.use(cors({
   methods: ['GET'],
 }));
 
-// Very small in-memory cache with TTL
-const scrapeCache = new Map(); // key -> { data, expiresAt }
-const CACHE_TTL_MS = CACHE_TTL_MS_ENV; // configurable TTL
+// Cache bem simples em memória, some quando reiniciar o servidor
+const scrapeCache = new Map(); // chave -> { data, expiresAt }
+const CACHE_TTL_MS = CACHE_TTL_MS_ENV; // dá pra configurar via env
 
-// Simple in-memory metrics
+// Contadores simples só pra acompanhar como o serviço tá se comportando
 const metrics = {
   startedAt: new Date().toISOString(),
   totalRequests: 0,
@@ -57,7 +58,7 @@ const metrics = {
   rateLimited: 0
 };
 
-// Count all requests
+// Conta toda requisição que chega, não importa a rota
 app.use((req, res, next) => {
   metrics.totalRequests += 1;
   next();
@@ -66,6 +67,7 @@ app.use((req, res, next) => {
 function getCache(key) {
   const entry = scrapeCache.get(key);
   if (!entry) return null;
+  // já expirou, joga fora e finge que não tinha nada
   if (Date.now() > entry.expiresAt) {
     scrapeCache.delete(key);
     return null;
@@ -77,10 +79,10 @@ function setCache(key, data, ttlMs = CACHE_TTL_MS) {
   scrapeCache.set(key, { data, expiresAt: Date.now() + ttlMs });
 }
 
-// Rate limiting for scrape endpoint
+// Limita quantas buscas cada IP pode fazer por minuto, pra não tomar bloqueio da Amazon
 const scrapeLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 min
-  max: RATE_LIMIT_MAX, // configurable req/min por IP
+  windowMs: 60 * 1000, // janela de 1 minuto
+  max: RATE_LIMIT_MAX, // quantidade de requisições permitida nessa janela
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req, res /*, next*/) => {
@@ -93,32 +95,34 @@ const scrapeLimiter = rateLimit({
   }
 });
 
-// Servir arquivos estáticos do build de produção
+// Serve os arquivos estáticos do build do front (pasta public)
+
 app.use(express.static(path.join(__dirname, '../public')));
 
 /**
- * Função para extrair dados de produtos da página de resultados da Amazon
- * @param {string} html - Conteúdo HTML da página
- * @returns {Array} Array de objetos com dados dos produtos
+ * Vasculha o HTML da página de busca da Amazon e monta a lista de produtos.
+ * Os seletores foram pegos olhando o HTML atual do site, então se a Amazon
+ * mudar o layout isso aqui provavelmente quebra e precisa ser ajustado.
+ * @param {string} html - HTML da página de resultados
+ * @returns {Array} lista de produtos encontrados
  */
 function extractProductsFromHTML(html) {
   const dom = new JSDOM(html);
   const document = dom.window.document;
   const products = [];
 
-  // Seletores CSS para elementos da Amazon
-  // Nota: Os seletores podem precisar de ajustes conforme a Amazon muda sua estrutura
+  // cada card de produto no resultado da busca
   const productContainers = document.querySelectorAll('[data-component-type="s-search-result"]');
 
   productContainers.forEach((container, index) => {
     try {
-      // Extrair título do produto
+      // título do produto - tenta alguns seletores porque a Amazon varia o markup
       const titleElement = container.querySelector('h2 a span') ||
                           container.querySelector('.a-size-medium') ||
                           container.querySelector('.a-size-base-plus');
       const title = titleElement ? titleElement.textContent.trim() : 'Título não encontrado';
 
-      // Extrair classificação (estrelas)
+      // nota do produto (as estrelinhas)
       const ratingElement = container.querySelector('.a-icon-alt') ||
                            container.querySelector('[aria-label*="estrela"]') ||
                            container.querySelector('.a-icon-star-small');
@@ -129,7 +133,7 @@ function extractProductsFromHTML(html) {
         rating = ratingMatch ? `${ratingMatch[1]} estrelas` : ratingText;
       }
 
-      // Extrair número de avaliações
+      // quantidade de avaliações
       const reviewsElement = container.querySelector('a[href*="customerReviews"]') ||
                             container.querySelector('.a-size-base.s-underline-text');
       let reviews = 'Sem avaliações';
@@ -139,31 +143,32 @@ function extractProductsFromHTML(html) {
         reviews = reviewsMatch ? reviewsMatch[1] : reviewsText;
       }
 
-      // Extrair URL da imagem
+      // imagem do produto
       const imageElement = container.querySelector('img.s-image') ||
                           container.querySelector('.a-image-container img');
       let imageUrl = '';
       if (imageElement) {
         imageUrl = imageElement.src || imageElement.getAttribute('data-src');
-        // Se a URL for relativa, converter para absoluta
+        // às vezes vem sem o protocolo (//...), aí completa com https
         if (imageUrl && imageUrl.startsWith('//')) {
           imageUrl = 'https:' + imageUrl;
         }
       }
 
-      // Extrair URL do produto
+      // link pra página do produto
       const productLinkElement = container.querySelector('h2 a') ||
                                 container.querySelector('.a-link-normal[href*="/dp/"]');
       let productUrl = '';
       if (productLinkElement) {
         productUrl = productLinkElement.href;
-        // Converter para URL absoluta se necessário
+        // link relativo, completa com o domínio
         if (productUrl && productUrl.startsWith('/')) {
           productUrl = 'https://www.amazon.com.br' + productUrl;
         }
       }
 
-      // Extrair preço
+      // preço - normalmente vem prontinho no span "a-offscreen", mas às vezes
+      // só dá pra montar juntando a parte inteira com a fração
       const priceElementOffscreen = container.querySelector('.a-price .a-offscreen') ||
                                    container.querySelector('.a-price-current .a-offscreen');
       let price = 'Preço não disponível';
@@ -187,7 +192,7 @@ function extractProductsFromHTML(html) {
         }
       }
 
-      // Só adicionar produtos que tenham pelo menos título ou imagem
+      // só entra na lista se tiver pelo menos título ou imagem, senão é lixo
       if (title !== 'Título não encontrado' || imageUrl) {
         products.push({
           id: index + 1,
@@ -200,6 +205,7 @@ function extractProductsFromHTML(html) {
         });
       }
     } catch (error) {
+      // um produto quebrado não pode derrubar os outros, então só loga e segue
       console.error(`Erro ao processar produto ${index + 1}:`, error.message);
     }
   });
@@ -208,13 +214,13 @@ function extractProductsFromHTML(html) {
 }
 
 /**
- * Função para buscar produtos da Amazon
- * @param {string} keyword - Palavra-chave para pesquisa
- * @returns {Promise<Array>} Array de produtos encontrados
+ * Faz a busca na Amazon pra uma palavra-chave e devolve os produtos encontrados.
+ * @param {string} keyword - o que o usuário quer pesquisar
+ * @returns {Promise<Array>} produtos encontrados
  */
 async function scrapeAmazonProducts(keyword) {
   try {
-    // Headers para simular um navegador real
+    // finge ser um navegador de verdade pra Amazon não bloquear de cara
     const headers = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -224,12 +230,12 @@ async function scrapeAmazonProducts(keyword) {
       'Upgrade-Insecure-Requests': '1',
     };
 
-    // URL de pesquisa da Amazon Brasil mostrando os produtos pesquisados
     const searchUrl = `https://www.amazon.com.br/s?k=${encodeURIComponent(keyword)}`;
 
     console.log(`Buscando produtos para: "${keyword}"`);
     console.log(`URL: ${searchUrl}`);
 
+    // validateStatus sempre true porque a gente mesmo trata o status abaixo
     const response = await axios.get(searchUrl, { headers, timeout: REQUEST_TIMEOUT_MS, validateStatus: () => true });
 
     if (response.status !== 200) {
@@ -245,7 +251,7 @@ async function scrapeAmazonProducts(keyword) {
   } catch (error) {
     console.error('Erro ao fazer scraping da Amazon:', error.message);
 
-    // Retornar dados de exemplo em caso de erro (para demonstração)
+    // sem conexão? devolve uns produtos fake só pra não deixar a tela vazia na demo
     if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
       console.log('Retornando dados de exemplo devido a erro de conexão...');
       return [
@@ -270,15 +276,14 @@ async function scrapeAmazonProducts(keyword) {
       ];
     }
 
-    // Propagar erro com mensagem controlada
+    // qualquer outro erro sobe pra quem chamou tratar
     const err = new Error(error.message || 'Falha ao buscar dados na Amazon');
     err.statusCode = error.response?.status || 500;
     throw err;
   }
 }
 
-// Endpoint principal para scraping
-// Scraping é o processo de extrair dados de uma página web
+// Rota principal: recebe a palavra-chave e devolve os produtos raspados da Amazon
 app.get('/api/scrape', scrapeLimiter, async (req, res) => {
   try {
     const { keyword } = req.query;
@@ -290,6 +295,7 @@ app.get('/api/scrape', scrapeLimiter, async (req, res) => {
       });
     }
 
+    // corta em 80 caracteres pra ninguém mandar uma string absurda
     const sanitized = String(keyword).trim().slice(0, 80);
     if (sanitized.length < 2) {
       return res.status(400).json({ success: false, error: 'Use ao menos 2 caracteres.' });
@@ -297,7 +303,7 @@ app.get('/api/scrape', scrapeLimiter, async (req, res) => {
 
     console.log(`Iniciando scraping para: "${sanitized}"`);
 
-    // Try cache first
+    // se já buscou essa palavra recentemente, devolve do cache e economiza uma requisição
     const cacheKey = `scrape:${sanitized}`;
     const cached = getCache(cacheKey);
     if (cached) {
@@ -315,7 +321,6 @@ app.get('/api/scrape', scrapeLimiter, async (req, res) => {
     metrics.scrapeRequests += 1;
     const products = await scrapeAmazonProducts(sanitized);
 
-    // Save to cache
     setCache(cacheKey, products);
 
     res.json({
@@ -341,8 +346,7 @@ app.get('/api/scrape', scrapeLimiter, async (req, res) => {
   }
 });
 
-// Endpoint de health check
-//Health check é uma rota que verifica se o servidor está funcionando corretamente
+// Rota simples pra saber se o servidor tá de pé
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
@@ -351,7 +355,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Simple metrics endpoint (do not expose publicly in prod without auth)
+// Métricas básicas de uso - não deixar isso público sem autenticação em produção
 app.get('/api/metrics', (req, res) => {
   const mem = process.memoryUsage();
   res.json({
@@ -372,12 +376,12 @@ app.get('/api/metrics', (req, res) => {
   });
 });
 
-// Rota raiz - servir aplicação frontend
+// Serve o index.html na raiz (entrada do front)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Rota para API info
+// Endpoint só pra listar o que essa API oferece
 app.get('/api', (req, res) => {
   res.json({
     message: 'Amazon Scraper API',
@@ -388,7 +392,7 @@ app.get('/api', (req, res) => {
   });
 });
 
-// Fallback para SPA - redirecionar todas as rotas não-API para index.html
+// Qualquer rota que não seja /api cai aqui e volta pro index.html (SPA)
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
     res.sendFile(path.join(__dirname, '../public/index.html'));
@@ -397,7 +401,7 @@ app.get('*', (req, res) => {
   }
 });
 
-// Centralized error handler (last resort)
+// Se algum erro escapar de todo o resto, cai aqui
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const status = err.statusCode || 500;
@@ -406,21 +410,21 @@ app.use((err, req, res, next) => {
   res.status(status).json({ success: false, error: message, status });
 });
 
-// Iniciando o servidor
+// Sobe o servidor
 const server = app.listen(PORT, () => {
   console.log(` Servidor rodando na porta ${PORT}`);
   console.log(` API disponível em: http://localhost:${PORT}/api/scrape`);
   console.log(` Health check: http://localhost:${PORT}/api/health`);
 });
 
-// Graceful shutdown
+// Encerra o servidor de forma limpa quando recebe sinal de término
 function shutdown(signal) {
   console.log(`\nRecebido ${signal}. Encerrando com graça...`);
   server.close(() => {
     console.log('Servidor encerrado.');
     process.exit(0);
   });
-  // Forçar saída após timeout
+  // se não encerrar sozinho a tempo, força a saída
   setTimeout(() => process.exit(1), 10_000).unref();
 }
 
