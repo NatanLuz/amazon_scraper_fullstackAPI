@@ -12,7 +12,7 @@
 
     <!-- Estilos CSS internos nao criei uma .style porém aqui consegui organizar direitinho como deveria ficar-->
     <style>
-        /* Estilo geral */
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             max-width: 800px;
@@ -21,7 +21,7 @@
             line-height: 1.6;
         }
 
-        /*colocando estilo de containers de seções */
+       
         .container {
             background: #f5f5f5;
             padding: 20px;
@@ -29,7 +29,7 @@
             margin: 20px 0;
         }
 
-        /* colocando estilo para os blocos de código */
+        
         .code {
             background: #2d2d2d;
             color: #f8f8f2;
@@ -39,12 +39,12 @@
             font-family: 'Courier New', monospace;
         }
 
-        /* Cores para diferentes tipos de avisos (mensagens) */
+        
         .success { color: #28a745; }
         .error { color: #dc3545; }
         .warning { color: #ffc107; }
 
-        /* Estilo para os botões simples */
+ 
         button {
             background: #007bff;
             color: white;
@@ -55,12 +55,12 @@
             margin: 5px;
         }
 
-        /* Efeito de hover nos botões simples */
+        
         button:hover {
             background: #0056b3;
         }
 
-        /* Estilo do campo de entrada */
+      
         input {
             padding: 8px;
             border: 1px solid #ddd;
@@ -68,7 +68,7 @@
             width: 200px;
         }
 
-        /* Estilo para o resultado da API orgulhoso por que deu certo  */
+        
         .result {
             background: white;
             padding: 15px;
@@ -196,7 +196,6 @@ else:
                 return;
             }
             
-            // Mensagem de carregamento....
             resultDiv.innerHTML = '<div class="result">Buscando produtos...</div>';
             
             try {
@@ -225,7 +224,7 @@ else:
                     html += '</div>';
                     resultDiv.innerHTML = html;
                 } else {
-                    // Em caso de erro da API
+                    
                     resultDiv.innerHTML = `<div class="result error">
                         <h3> Erro</h3>
                         <p>${data.error || 'Erro desconhecido'}</p>
