@@ -8,7 +8,7 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Função para log colorido
+# Função para o log colorido
 log_info() {
     echo -e "${GREEN}[INFO]${NC} $1"
 }
