@@ -13,7 +13,7 @@ O **Amazon Product Scraper Inteligente** é uma aplicação full stack desenvolv
 
 O projeto demonstra técnicas de Web Scraping, consumo e processamento de HTML, normalização de dados, desenvolvimento de APIs REST, observabilidade, cache, segurança e construção de interfaces modernas.
 
-### Arquitetura da aplicação
+## Arquitetura da aplicação
 
 ```text
 Frontend (Vite + Tailwind CSS)
@@ -35,7 +35,7 @@ O frontend consome a API e apresenta os produtos em uma grade responsiva. No bac
 
 ## ✨ Funcionalidades
 
-### Scraping e dados
+## Scraping e dados
 
 - Coleta automatizada de produtos da Amazon Brasil;
 - pesquisa por palavra-chave;
@@ -44,13 +44,13 @@ O frontend consome a API e apresenta os produtos em uma grade responsiva. No bac
 - normalização e estruturação dos dados;
 - disponibilização dos resultados por uma API REST em JSON.
 
-### Filtros
+## Filtros
 
 - Avaliação mínima;
 - faixa de preço mínimo e máximo;
 - exibição exclusiva de produtos Prime.
 
-### Interface
+## Interface
 
 - Layout responsivo e mobile-first;
 - grid de produtos;
@@ -60,7 +60,7 @@ O frontend consome a API e apresenta os produtos em uma grade responsiva. No bac
 - consumo da API por `fetch`;
 - painel de métricas em tempo real.
 
-### Observabilidade, desempenho e segurança
+## Observabilidade, desempenho e segurança
 
 - Cache em memória com TTL;
 - endpoint de Health Check;
@@ -74,7 +74,7 @@ O frontend consome a API e apresenta os produtos em uma grade responsiva. No bac
 - validação dos parâmetros de entrada;
 - tratamento centralizado de erros e respostas padronizadas.
 
-### Endpoints
+## Endpoints
 
 ```http
 GET /api/health
@@ -86,21 +86,21 @@ O parâmetro `keyword` define o termo utilizado na pesquisa dos produtos.
 
 ## 🖼️ Screenshots
 
-### Interface principal
+## Interface principal
 
 ![Interface principal do Amazon Product Scraper](https://i.imgur.com/y5aWKLi.png)
 
-### Resultados e filtros
+## Resultados e filtros
 
 ![Resultados e filtros da aplicação](https://i.imgur.com/OXFpdoq.png)
 
-### Visualização adicional
+## Visualização adicional
 
 ![Visualização adicional da aplicação](https://i.imgur.com/ordYqb9.png)
 
 ## 🚀 Tecnologias
 
-### Backend
+## Backend
 
 - Node.js;
 - Express;
@@ -111,33 +111,33 @@ O parâmetro `keyword` define o termo utilizado na pesquisa dos produtos.
 - Compression;
 - Express Rate Limit.
 
-### Frontend
+## Frontend
 
 - Vite;
 - Tailwind CSS;
 - JavaScript.
 
-### Testes
+## Testes
 
 - Vitest;
 - JSDOM.
 
 ## ⚙️ Como executar
 
-### Pré-requisitos
+## Pré-requisitos
 
 - Git;
 - Node.js 20+;
 - npm.
 
-### Clonar o repositório
+## Clonar o repositório
 
 ```bash
 git clone https://github.com/seu-usuario/amazon-scraper.git
 cd amazon-scraper
 ```
 
-### Instalar as dependências
+## Instalar as dependências
 
 Instale as dependências do backend e, em seguida, as dependências do frontend:
 
@@ -146,7 +146,7 @@ npm install
 npm run install-client
 ```
 
-### Executar o backend
+## Executar o backend
 
 Na raiz do projeto, execute:
 
@@ -160,7 +160,7 @@ A API ficará disponível em:
 http://localhost:3000
 ```
 
-### Executar o frontend
+## Executar o frontend
 
 Em outro terminal, execute:
 
@@ -175,7 +175,7 @@ A interface ficará disponível em:
 http://localhost:5173
 ```
 
-### Verificação funcional
+## Verificação funcional
 
 Após iniciar os dois serviços:
 
