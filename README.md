@@ -33,7 +33,7 @@ O frontend consome a API e apresenta os produtos em uma grade responsiva. No bac
 
 > O projeto depende da estrutura HTML de um serviço externo. Alterações realizadas pela Amazon podem exigir adaptações no processo de scraping.
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 ## Scraping e dados
 
