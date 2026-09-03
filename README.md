@@ -13,7 +13,7 @@ O **Amazon Product Scraper Inteligente** é uma aplicação full stack desenvolv
 
 O projeto demonstra técnicas de Web Scraping, consumo e processamento de HTML, normalização de dados, desenvolvimento de APIs REST, observabilidade, cache, segurança e construção de interfaces modernas.
 
-## Arquitetura da aplicação
+## Arquitetura da Aplicação
 
 ```text
 Frontend (Vite + Tailwind CSS)
