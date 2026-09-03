@@ -206,14 +206,6 @@ amazon-product-scraper/
 - `package.json`: dependências e scripts do projeto;
 - `README.md`: documentação técnica.
 
-## 🌐 Deploy
-
-O frontend pode ser publicado em plataformas compatíveis com aplicações Vite, como a Vercel. A API Node.js pode ser hospedada em serviços como Railway, Render ou em uma VPS.
-
-Durante a publicação, o frontend deve ser configurado para consumir a URL pública da API. O backend também precisa receber as configurações adequadas ao ambiente de hospedagem e permitir a origem utilizada pela interface.
-
-O projeto pode ainda ser executado integralmente em ambiente local, com o frontend em `http://localhost:5173` e a API em `http://localhost:3000`.
-
 ## 👤 Autor
 
 **Natan Da Luz**
