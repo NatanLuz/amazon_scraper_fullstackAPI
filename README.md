@@ -1,4 +1,4 @@
-# Amazon Product Scraper Inteligente
+# Amazon Scraper de Produtos Inteligentes
 
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat\&logo=node.js\&logoColor=white)]()
 [![Express](https://img.shields.io/badge/Express-000000?style=flat\&logo=express\&logoColor=white)]()
@@ -84,7 +84,7 @@ GET /api/scrape?keyword=produto
 
 O parâmetro `keyword` define o termo utilizado na pesquisa dos produtos.
 
-## 🖼️ Screenshots
+## Screenshots
 
 ## Interface principal
 
@@ -98,7 +98,7 @@ O parâmetro `keyword` define o termo utilizado na pesquisa dos produtos.
 
 ![Visualização adicional da aplicação](https://i.imgur.com/ordYqb9.png)
 
-## 🚀 Tecnologias
+## Tecnologias
 
 ## Backend
 
@@ -122,7 +122,7 @@ O parâmetro `keyword` define o termo utilizado na pesquisa dos produtos.
 - Vitest;
 - JSDOM.
 
-## ⚙️ Como executar
+## Como executar
 
 ## Pré-requisitos
 
