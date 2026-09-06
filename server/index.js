@@ -15,17 +15,36 @@ const PORT = Number(process.env.PORT) || 3000;
 const REQUEST_TIMEOUT_MS = Number(process.env.REQUEST_TIMEOUT_MS) || 12000;
 const CACHE_TTL_MS_ENV = Number(process.env.CACHE_TTL_MS) || 60_000;
 const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX) || 15;
+const CACHE_MAX_ENTRIES = 100;
+const KEYWORD_MAX_LENGTH = 80;
+const isDevelopment = process.env.NODE_ENV === 'development';
 
 // Helmet cuida de uns headers de segurança padrão pra gente não ter que fazer na mão
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' }
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      scriptSrcAttr: ["'none'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com', 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://cdnjs.cloudflare.com', 'https://fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'https://*.media-amazon.com', 'https://m.media-amazon.com', 'https://via.placeholder.com'],
+      connectSrc: ["'self'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+      frameAncestors: ["'self'"],
+      objectSrc: ["'none'"]
+    }
+  }
 }));
 
 // Limite de 100kb no body pra evitar payload gigante
 app.use(express.json({ limit: '100kb' }));
 
 // Log de cada requisição no console, ajuda a debugar em dev
-app.use(morgan('dev'));
+morgan.token('path', (req) => req.path);
+app.use(morgan(':method :path :status :response-time ms'));
 
 // Comprime as respostas antes de mandar pro cliente
 app.use(compression());
@@ -65,6 +84,7 @@ app.use((req, res, next) => {
 });
 
 function getCache(key) {
+  cleanupExpiredCache();
   const entry = scrapeCache.get(key);
   if (!entry) return null;
   // já expirou, joga fora e finge que não tinha nada
@@ -76,7 +96,57 @@ function getCache(key) {
 }
 
 function setCache(key, data, ttlMs = CACHE_TTL_MS) {
+  cleanupExpiredCache();
   scrapeCache.set(key, { data, expiresAt: Date.now() + ttlMs });
+  while (scrapeCache.size > CACHE_MAX_ENTRIES) {
+    const oldestKey = scrapeCache.keys().next().value;
+    scrapeCache.delete(oldestKey);
+  }
+}
+
+function cleanupExpiredCache(now = Date.now()) {
+  for (const [key, entry] of scrapeCache.entries()) {
+    if (now > entry.expiresAt) {
+      scrapeCache.delete(key);
+    }
+  }
+}
+
+function validateKeyword(query) {
+  if (!Object.prototype.hasOwnProperty.call(query, 'keyword')) {
+    return { error: 'Palavra-chave obrigat\u00f3ria' };
+  }
+
+  const { keyword } = query;
+  if (typeof keyword !== 'string') {
+    return { error: 'Informe uma \u00fanica palavra-chave v\u00e1lida' };
+  }
+
+  const sanitized = keyword.trim();
+  if (!sanitized) {
+    return { error: 'Palavra-chave obrigat\u00f3ria' };
+  }
+
+  if (sanitized.length < 2) {
+    return { error: 'Use ao menos 2 caracteres' };
+  }
+
+  if (sanitized.length > KEYWORD_MAX_LENGTH) {
+    return { error: `Use no m\u00e1ximo ${KEYWORD_MAX_LENGTH} caracteres` };
+  }
+
+  if (/[\u0000-\u001F\u007F]/.test(sanitized)) {
+    return { error: 'Palavra-chave inv\u00e1lida' };
+  }
+
+  return { value: sanitized };
+}
+
+function publicScrapeError(status, error) {
+  if (status === 429 || String(error.message || '').includes('429')) {
+    return 'Muitas requisi\u00e7\u00f5es \u00e0 Amazon. Tente novamente em alguns minutos.';
+  }
+  return 'N\u00e3o foi poss\u00edvel concluir a busca agora. Tente novamente em instantes.';
 }
 
 // Limita quantas buscas cada IP pode fazer por minuto, pra não tomar bloqueio da Amazon
@@ -232,8 +302,7 @@ async function scrapeAmazonProducts(keyword) {
 
     const searchUrl = `https://www.amazon.com.br/s?k=${encodeURIComponent(keyword)}`;
 
-    console.log(`Buscando produtos para: "${keyword}"`);
-    console.log(`URL: ${searchUrl}`);
+    console.log(`Buscando produtos na Amazon (${keyword.length} caracteres)`);
 
     // validateStatus sempre true porque a gente mesmo trata o status abaixo
     const response = await axios.get(searchUrl, { headers, timeout: REQUEST_TIMEOUT_MS, validateStatus: () => true });
@@ -250,6 +319,9 @@ async function scrapeAmazonProducts(keyword) {
 
   } catch (error) {
     console.error('Erro ao fazer scraping da Amazon:', error.message);
+    if (isDevelopment && error.stack) {
+      console.error(error.stack);
+    }
 
     // sem conexão? devolve uns produtos fake só pra não deixar a tela vazia na demo
     if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
@@ -286,22 +358,16 @@ async function scrapeAmazonProducts(keyword) {
 // Rota principal: recebe a palavra-chave e devolve os produtos raspados da Amazon
 app.get('/api/scrape', scrapeLimiter, async (req, res) => {
   try {
-    const { keyword } = req.query;
-
-    if (!keyword || keyword.trim() === '') {
+    const keywordResult = validateKeyword(req.query);
+    if (keywordResult.error) {
       return res.status(400).json({
         success: false,
-        error: 'Palavra-chave é obrigatória'
+        error: keywordResult.error
       });
     }
+    const sanitized = keywordResult.value;
 
-    // corta em 80 caracteres pra ninguém mandar uma string absurda
-    const sanitized = String(keyword).trim().slice(0, 80);
-    if (sanitized.length < 2) {
-      return res.status(400).json({ success: false, error: 'Use ao menos 2 caracteres.' });
-    }
-
-    console.log(`Iniciando scraping para: "${sanitized}"`);
+    console.log(`Iniciando scraping (${sanitized.length} caracteres)`);
 
     // se já buscou essa palavra recentemente, devolve do cache e economiza uma requisição
     const cacheKey = `scrape:${sanitized}`;
@@ -332,15 +398,14 @@ app.get('/api/scrape', scrapeLimiter, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erro no endpoint /api/scrape:', error);
+    console.error('Erro no endpoint /api/scrape:', error.message);
+    if (isDevelopment && error.stack) {
+      console.error(error.stack);
+    }
     const status = error.statusCode && Number.isInteger(error.statusCode) ? error.statusCode : 500;
-    const message =
-      String(error.message || '').includes('429')
-        ? 'Muitas requisições à Amazon. Tente novamente em alguns minutos.'
-        : String(error.message || 'Erro interno do servidor');
     res.status(status).json({
       success: false,
-      error: message,
+      error: publicScrapeError(status, error),
       status
     });
   }
@@ -405,9 +470,11 @@ app.get('*', (req, res) => {
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const status = err.statusCode || 500;
-  const message = err.message || 'Erro interno do servidor';
-  console.error('Unhandled error:', message);
-  res.status(status).json({ success: false, error: message, status });
+  console.error('Unhandled error:', err.message || 'Erro interno do servidor');
+  if (isDevelopment && err.stack) {
+    console.error(err.stack);
+  }
+  res.status(status).json({ success: false, error: 'Erro interno do servidor', status });
 });
 
 // Sobe o servidor
