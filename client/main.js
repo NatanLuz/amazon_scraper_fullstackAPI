@@ -155,77 +155,132 @@ function showError(message) {
 /**
  * Função para criar estrelas baseada na classificação
  */
-function createStars(rating) {
+function appendStars(container, rating) {
     const ratingMatch = rating.match(/(\d+(?:\.\d+)?)/);
-    if (!ratingMatch) return '';
+    if (!ratingMatch) return;
 
     const ratingValue = parseFloat(ratingMatch[1]);
     const fullStars = Math.floor(ratingValue);
     const hasHalfStar = ratingValue % 1 >= 0.5;
 
-    let starsHTML = '';
-
     // Estrelas cheias
     for (let i = 0; i < fullStars; i++) {
-        starsHTML += '<i class="fas fa-star"></i>';
+        const star = document.createElement('i');
+        star.className = 'fas fa-star';
+        container.appendChild(star);
     }
 
     // Meia estrela
     if (hasHalfStar) {
-        starsHTML += '<i class="fa-solid fa-star-half-stroke"></i>';
+        const halfStar = document.createElement('i');
+        halfStar.className = 'fa-solid fa-star-half-stroke';
+        container.appendChild(halfStar);
     }
 
     // Estrelas vazias
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
     for (let i = 0; i < emptyStars; i++) {
-        starsHTML += '<i class="far fa-star"></i>';
+        const emptyStar = document.createElement('i');
+        emptyStar.className = 'far fa-star';
+        container.appendChild(emptyStar);
     }
+}
 
-    return starsHTML;
+function getSafeWebUrl(value, allowedProtocols = ['https:', 'http:']) {
+    if (!value || typeof value !== 'string') return '';
+    if (value === '#') return '#';
+    try {
+        const url = new URL(value, window.location.origin);
+        return allowedProtocols.includes(url.protocol) ? url.href : '';
+    } catch {
+        return '';
+    }
 }
 
 /**
  * Função para criar card de produtos
  */
 function createProductCard(product) {
-    const starsHTML = createStars(product.rating);
     const ratingValue = product.rating ? product.rating.match(/(\d+(?:\.\d+)?)/)?.[1] || '0' : '0';
+    const fallbackImage = 'https://via.placeholder.com/200x200?text=Sem+Imagem';
+    const errorImage = 'https://via.placeholder.com/200x200?text=Erro+na+Imagem';
+    const imageUrl = getSafeWebUrl(product.imageUrl) || fallbackImage;
+    const productUrl = getSafeWebUrl(product.productUrl);
 
-    return `
-        <div class="product-card group" data-product-id="${product.id}">
-            <div class="relative">
-                <img
-                    src="${product.imageUrl || 'https://via.placeholder.com/200x200?text=Sem+Imagem'}"
-                    alt="${product.title}"
-                    class="product-image"
-                    onerror="this.src='https://via.placeholder.com/200x200?text=Erro+na+Imagem'"
-                >
-                ${product.rating ? `
-                    <div class="absolute top-2 right-2 bg-white dark:bg-gray-800 rounded-full px-2 py-1 shadow-lg">
-                        <div class="flex items-center gap-1">
-                            <i class="fas fa-star text-yellow-400 text-xs"></i>
-                            <span class="text-xs font-semibold text-gray-900 dark:text-white">${ratingValue}</span>
-                        </div>
-                    </div>
-                ` : ''}
-            </div>
-            <h3 class="product-title">${product.title}</h3>
-            <div class="product-price">${product.price}</div>
-            <div class="product-rating">
-                ${starsHTML}
-                ${product.rating ? `<span class="rating-badge">${product.rating}</span>` : ''}
-            </div>
-            <div class="product-reviews">
-                ${product.reviews || '0'} avaliações
-            </div>
-            ${product.productUrl ? `
-                <a href="${product.productUrl}" target="_blank" class="product-link" rel="noopener noreferrer">
-                    <i class="fas fa-external-link-alt"></i>
-                    Ver na Amazon
-                </a>
-            ` : ''}
-        </div>
-    `;
+    const card = document.createElement('div');
+    card.className = 'product-card group';
+    card.dataset.productId = String(product.id || '');
+
+    const imageWrapper = document.createElement('div');
+    imageWrapper.className = 'relative';
+
+    const image = document.createElement('img');
+    image.src = imageUrl;
+    image.alt = product.title || 'Produto';
+    image.className = 'product-image';
+    image.addEventListener('error', () => {
+        image.src = errorImage;
+    }, { once: true });
+    imageWrapper.appendChild(image);
+
+    if (product.rating) {
+        const badge = document.createElement('div');
+        badge.className = 'absolute top-2 right-2 bg-white dark:bg-gray-800 rounded-full px-2 py-1 shadow-lg';
+        const badgeContent = document.createElement('div');
+        badgeContent.className = 'flex items-center gap-1';
+        const badgeIcon = document.createElement('i');
+        badgeIcon.className = 'fas fa-star text-yellow-400 text-xs';
+        const badgeText = document.createElement('span');
+        badgeText.className = 'text-xs font-semibold text-gray-900 dark:text-white';
+        badgeText.textContent = ratingValue;
+        badgeContent.appendChild(badgeIcon);
+        badgeContent.appendChild(badgeText);
+        badge.appendChild(badgeContent);
+        imageWrapper.appendChild(badge);
+    }
+
+    const title = document.createElement('h3');
+    title.className = 'product-title';
+    title.textContent = product.title || 'Produto sem t\u00edtulo';
+
+    const price = document.createElement('div');
+    price.className = 'product-price';
+    price.textContent = product.price || 'Pre\u00e7o n\u00e3o dispon\u00edvel';
+
+    const rating = document.createElement('div');
+    rating.className = 'product-rating';
+    appendStars(rating, product.rating || '');
+    if (product.rating) {
+        const ratingBadge = document.createElement('span');
+        ratingBadge.className = 'rating-badge';
+        ratingBadge.textContent = product.rating;
+        rating.appendChild(ratingBadge);
+    }
+
+    const reviews = document.createElement('div');
+    reviews.className = 'product-reviews';
+    reviews.textContent = `${product.reviews || '0'} avalia\u00e7\u00f5es`;
+
+    card.appendChild(imageWrapper);
+    card.appendChild(title);
+    card.appendChild(price);
+    card.appendChild(rating);
+    card.appendChild(reviews);
+
+    if (productUrl) {
+        const link = document.createElement('a');
+        link.href = productUrl;
+        link.target = '_blank';
+        link.className = 'product-link';
+        link.rel = 'noopener noreferrer';
+        const linkIcon = document.createElement('i');
+        linkIcon.className = 'fas fa-external-link-alt';
+        link.appendChild(linkIcon);
+        link.appendChild(document.createTextNode(' Ver na Amazon'));
+        card.appendChild(link);
+    }
+
+    return card;
 }
 
 /**
@@ -361,7 +416,7 @@ function renderNextBatch() {
     const slice = filteredProducts.slice(renderIndex, renderIndex + RENDER_BATCH);
     slice.forEach((product, idx) => {
         setTimeout(() => {
-            elements.productsGrid.innerHTML += createProductCard(product);
+            elements.productsGrid.appendChild(createProductCard(product));
         }, idx * 50);
     });
     renderIndex += slice.length;
