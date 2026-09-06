@@ -33,6 +33,9 @@
     "vite"
   ],
   "author": "Natan Da Luz",
+  "overrides": {
+    "qs": "6.16.0"
+  },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
   }
