@@ -1,38 +1,42 @@
-
 {
   "name": "amazon-scraper",
-  "version": "1.0.0",
-  "description": "Amazon product scraper with Bun backend and Vite frontend",
+  "version": "1.1.0",
+  "description": "Amazon product scraper with Node.js + Express backend and Vite frontend",
   "main": "server/index.js",
   "scripts": {
     "dev": "node --watch server/index.js",
     "start": "node server/index.js",
-    "dev:bun": "bun run --watch server/index.js",
-    "start:bun": "bun run server/index.js",
-    "build": "cd client; npm run build",
-    "build:prod": "npm run install-all && npm run build",
+    "build": "npm --prefix client run build",
+    "build:prod": "npm run build",
     "deploy": "npm run build:prod && npm start",
-    "install-client": "cd client; npm install",
-    "install-server": "npm install",
-    "install-all": "npm install && npm run install-client",
-    "test-api": "curl http://localhost:3000/api/health",
-    "clean": "rm -rf public/assets && rm -f public/index.html"
+    "install-client": "npm ci --prefix client",
+    "install-server": "npm ci",
+    "install-all": "npm run install-server && npm run install-client",
+    "test-api": "node -e \"fetch('http://localhost:' + (process.env.PORT || 3000) + '/api/health').then(async response => { if (!response.ok) throw new Error('HTTP ' + response.status); console.log(await response.text()); }).catch(error => { console.error(error.message); process.exitCode = 1; });\"",
+    "clean": "node -e \"const fs = require('node:fs'); fs.rmSync('public/assets', { recursive: true, force: true }); fs.rmSync('public/index.html', { force: true });\""
   },
   "dependencies": {
-    "express": "^4.19.2",
-    "axios": "^1.7.7",
-    "jsdom": "^24.1.0",
-    "cors": "^2.8.5",
-    "helmet": "^7.1.0",
+    "axios": "1.20.0",
     "compression": "^1.7.4",
-    "morgan": "^1.10.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "4.22.2",
     "express-rate-limit": "^7.4.0",
-    "dotenv": "^16.4.5"
+    "helmet": "^7.1.0",
+    "jsdom": "^24.1.0",
+    "morgan": "1.12.0"
   },
-  "devDependencies": {
-    "bun-types": "latest"
+  "keywords": [
+    "amazon",
+    "scraper",
+    "nodejs",
+    "vite"
+  ],
+  "author": "Natan Da Luz",
+  "overrides": {
+    "qs": "6.16.0"
   },
-  "keywords": ["amazon", "scraper", "bun", "vite"],
-  "author": "Your Name",
-  "license": "MIT"
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
 }
