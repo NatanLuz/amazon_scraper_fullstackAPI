@@ -1,8 +1,10 @@
 # Status Final do Projeto - Amazon Scraper
 
-## Projeto Finalizado com Sucesso!
+> Snapshot histórico de uma etapa anterior do projeto. As versões, resultados de testes, auditorias e instruções abaixo registram aquela etapa e não devem ser interpretados automaticamente como o estado técnico atual. Para instalação e scripts atuais, consulte `README.md`, `INSTALACAO.md` e `package.json`.
 
-O Amazon Product Scraper foi completamente finalizado e está pronto para uso em produção.
+## Conclusão registrada na etapa anterior
+
+Naquela etapa, o Amazon Product Scraper foi considerado concluído. Esse registro não atesta prontidão atual para produção nem ausência atual de vulnerabilidades.
 
 ## O que foi Realizado
 
@@ -138,7 +140,7 @@ amazon-scraper/
 - ✅ **Dependencies**: Todas as dependências instaladas
 - ✅ **Security**: 0 vulnerabilidades detectadas
 
-**O projeto Amazon Scraper está 100% finalizado e pronto para uso!**
+**Encerramento da etapa histórica; não representa uma garantia do estado atual do projeto.**
 
 ### Informações úteis durante o desenvolvimento
 - 🔒 Segurança: 0 vulnerabilidades

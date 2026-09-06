@@ -127,30 +127,31 @@ O parâmetro `keyword` define o termo utilizado na pesquisa dos produtos.
 ## Pré-requisitos
 
 - Git;
-- Node.js 20+;
+- Node.js `^20.19.0 || >=22.12.0`;
 - npm.
 
 ## Clonar o repositório
 
-```bash
-git clone https://github.com/seu-usuario/amazon-scraper.git
-cd amazon-scraper
+```powershell
+git clone https://github.com/NatanLuz/amazon_scraper_fullstackAPI.git
+cd amazon_scraper_fullstackAPI
 ```
 
 ## Instalar as dependências
 
-Instale as dependências do backend e, em seguida, as dependências do frontend:
+Na raiz, instale as dependências do backend e do frontend de forma reproduzível com os lockfiles:
 
-```bash
-npm install
-npm run install-client
+```powershell
+npm run install-all
 ```
+
+Para instalar separadamente, use `npm run install-server` e `npm run install-client`.
 
 ## Executar o backend
 
 Na raiz do projeto, execute:
 
-```bash
+```powershell
 npm start
 ```
 
@@ -164,7 +165,7 @@ http://localhost:3000
 
 Em outro terminal, execute:
 
-```bash
+```powershell
 cd client
 npm run dev
 ```
@@ -174,6 +175,17 @@ A interface ficará disponível em:
 ```text
 http://localhost:5173
 ```
+
+## Build pela raiz
+
+Para compilar o frontend e servi-lo pelo backend em `http://localhost:3000`:
+
+```powershell
+npm run build
+npm start
+```
+
+`npm run build:prod` reutiliza esse build sem instalar dependências. `npm run deploy` compila e inicia localmente; não publica em uma plataforma externa.
 
 ## Verificação funcional
 
@@ -191,10 +203,9 @@ Após iniciar os dois serviços:
 A aplicação separa o backend, o frontend e os testes automatizados:
 
 ```text
-amazon-product-scraper/
+amazon_scraper_fullstackAPI/
 ├── server/
 ├── client/
-├── tests/
 ├── package.json
 ├── README.md
 └── ...
@@ -202,7 +213,7 @@ amazon-product-scraper/
 
 - `server/`: API REST, scraping, cache, observabilidade e middlewares;
 - `client/`: interface web desenvolvida com Vite e Tailwind CSS;
-- `tests/`: testes automatizados executados com Vitest;
+- `client/src/__tests__/`: testes automatizados executados com Vitest (`npm --prefix client test -- --run`);
 - `package.json`: dependências e scripts do projeto;
 - `README.md`: documentação técnica.
 

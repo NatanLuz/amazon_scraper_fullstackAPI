@@ -6,53 +6,54 @@ Este guia fornece instruções completas para instalar e executar o Amazon Produ
 
 Antes de começar, certifique-se de ter instalado:
 
-- **Node.js** (versão 16 ou superior) - [Download](https://nodejs.org/)
+- **Node.js** (`^20.19.0 || >=22.12.0`) - [Download](https://nodejs.org/)
 - **npm** (incluído com Node.js)
 - **Git** (opcional, para clonar o repositório)
 
 ### Verificar instalação
 
-```bash
+```powershell
 node --version
 npm --version
 ```
 
 ## 📥 Instalação
 
-### Método 1: Instalação Automática (Recomendado)
+### Método 1: Instalação pelos scripts npm (Recomendado)
+
+Os comandos abaixo funcionam no Windows/PowerShell, sem depender de Bash.
 
 1. **Clone ou baixe o projeto**:
-```bash
-git clone <repository-url>
-cd amazon-scraper
+```powershell
+git clone https://github.com/NatanLuz/amazon_scraper_fullstackAPI.git
+cd amazon_scraper_fullstackAPI
 ```
 
-2. **Execute o script de deploy**:
-```bash
-./deploy.sh
+2. **Instale pelos lockfiles e compile pela raiz**:
+```powershell
+npm run install-all
+npm run build
 ```
 
 3. **Inicie o servidor**:
-```bash
+```powershell
 npm start
 ```
 
 ### Método 2: Instalação Manual
 
 1. **Instalar dependências do backend**:
-```bash
-npm install
+```powershell
+npm run install-server
 ```
 
 2. **Instalar dependências do frontend**:
-```bash
-cd client
-npm install
-cd ..
+```powershell
+npm run install-client
 ```
 
 3. **Ou usar o comando combinado**:
-```bash
+```powershell
 npm run install-all
 ```
 
@@ -61,14 +62,16 @@ npm run install-all
 ### Variáveis de Ambiente (Opcional)
 
 Copie o arquivo de exemplo:
-```bash
-cp .env.example .env
+```powershell
+Copy-Item .env.example .env
 ```
 
 Edite as configurações conforme necessário:
 ```env
 PORT=3000
-NODE_ENV=production
+# REQUEST_TIMEOUT_MS=12000
+# CACHE_TTL_MS=60000
+# RATE_LIMIT_MAX=15
 ```
 
 ## 🚀 Executando a Aplicação
@@ -76,12 +79,12 @@ NODE_ENV=production
 ### Desenvolvimento
 
 1. **Iniciar o backend**:
-```bash
+```powershell
 npm run dev
 ```
 
 2. **Em outro terminal, iniciar o frontend**:
-```bash
+```powershell
 cd client
 npm run dev
 ```
@@ -93,12 +96,12 @@ Acesse:
 ### Produção
 
 1. **Build da aplicação**:
-```bash
+```powershell
 npm run build
 ```
 
 2. **Iniciar servidor**:
-```bash
+```powershell
 npm start
 ```
 
@@ -111,48 +114,48 @@ Acesse: http://localhost:3000
 | `npm run dev` | Inicia servidor backend em modo desenvolvimento |
 | `npm start` | Inicia servidor em modo produção |
 | `npm run build` | Constrói frontend para produção |
-| `npm run build:prod` | Instala dependências e constrói para produção |
-| `npm run deploy` | Deploy completo (build + start) |
-| `npm run install-all` | Instala todas as dependências |
-| `npm run test-api` | Testa se a API está funcionando |
+| `npm run build:prod` | Reutiliza o build sem instalar dependências |
+| `npm run deploy` | Compila e inicia localmente, sem publicação externa |
+| `npm run install-server` | Instala dependências da raiz com `npm ci` |
+| `npm run install-client` | Instala dependências do client com `npm ci --prefix client` |
+| `npm run install-all` | Executa as duas instalações reproduzíveis |
+| `npm run test-api` | Consulta o health check com fetch nativo do Node; falha em erro HTTP ou de conexão |
 | `npm run clean` | Limpa arquivos de build |
 
 ## 🔍 Verificação
 
 ### Testar API
 
-```bash
-curl http://localhost:3000/api/health
+```powershell
+npm run test-api
+Invoke-RestMethod http://localhost:3000/api
+Invoke-RestMethod http://localhost:3000/api/metrics
 ```
 
 ### Testar Scraping
 
-```bash
-curl "http://localhost:3000/api/scrape?keyword=smartphone"
+```powershell
+Invoke-RestMethod "http://localhost:3000/api/scrape?keyword=smartphone"
 ```
 
 ## 🐛 Solução de Problemas
 
 ### Erro: "porta já em uso"
-```bash
-# Encontrar processo usando a porta
-lsof -i :3000
-
-# Matar processo
-kill -9 <PID>
+```powershell
+# Identificar o processo usando a porta
+Get-NetTCPConnection -LocalPort 3000 -State Listen | Select-Object OwningProcess
 ```
 
+Encerre o servidor com Ctrl+C no terminal em que ele foi iniciado.
+
 ### Erro: "dependências não encontradas"
-```bash
-# Limpar cache e reinstalar
-npm cache clean --force
-rm -rf node_modules
-rm -rf client/node_modules
+```powershell
+# Reinstalar a partir dos lockfiles; npm ci substitui node_modules
 npm run install-all
 ```
 
 ### Erro: "build não encontrado"
-```bash
+```powershell
 # Reconstruir aplicação
 npm run clean
 npm run build
@@ -161,7 +164,7 @@ npm run build
 ## 📁 Estrutura de Arquivos
 
 ```
-amazon-scraper/
+amazon_scraper_fullstackAPI/
 ├── server/
 │   └── index.js          # Servidor Express
 ├── client/
@@ -170,14 +173,14 @@ amazon-scraper/
 │   ├── style.css         # Estilos CSS
 │   └── package.json      # Dependências frontend
 ├── public/               # Build de produção
-├── deploy.sh            # Script de deploy
+├── deploy.sh            # Script legado para Bash
 ├── .env.example         # Configurações de exemplo
 └── package.json         # Dependências backend
 ```
 
 ## 🔒 Segurança
 
-- ✅ Vulnerabilidades Corrigidas
+- Consulte `npm audit` e `npm audit --omit=dev` na raiz e no client para o diagnóstico de dependências atual.
 - ✅ CORS configurado
 - ✅ Validação de entrada
 - ✅ Headers de segurança
@@ -185,14 +188,16 @@ amazon-scraper/
 ## 🌐 Deploy
 
 ### Deploy Local
-```bash
-./deploy.sh
-npm start
+```powershell
+npm run install-all
+npm run deploy
 ```
+
+O script `deploy` apenas compila e inicia a aplicação localmente; não publica em uma plataforma externa.
 
 ### Deploy em Servidor
 1. Transfira os arquivos para o servidor
-2. Execute `./deploy.sh`
+2. Execute `npm run install-all`, `npm run build` e `npm start` na raiz
 3. Configure proxy reverso (nginx/apache) se necessário
 4. Configure PM2 para gerenciamento de processo (opcional)
 

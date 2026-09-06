@@ -2,6 +2,13 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
+## [Não lançado]
+
+- Scripts compatíveis com Windows, instalações reproduzíveis com `npm ci` e build sem instalação de dependências.
+- Remoção dos resíduos de Bun do pacote da raiz e alinhamento da base Node.js.
+- Atualizações de segurança de Axios, Express, Morgan, Vite, PostCSS e dependências transitivas compatíveis, preservando as majors e Vitest 2.
+- Alinhamento de `.env.example`, metadata e documentação; versão da raiz sincronizada com o histórico 1.1.0.
+
 ## [1.1.0] - 2024-12-22
 
 ### ✨ Adicionado
