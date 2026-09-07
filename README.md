@@ -1,4 +1,4 @@
-# Amazon Scraper de Produtos Inteligentes
+# Projeto Amazon Scraper de Produtos Inteligentes
 
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat\&logo=node.js\&logoColor=white)]()
 [![Express](https://img.shields.io/badge/Express-000000?style=flat\&logo=express\&logoColor=white)]()
