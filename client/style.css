@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Zera margem/padding padrão do navegador e deixa o box-sizing sempre previsível */
 * {
     margin: 0;
     padding: 0;
@@ -79,7 +78,7 @@ body {
     margin-bottom: 3rem;
 }
 
-/* Card branco que envolve o campo de busca */
+
 .search-container {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
@@ -96,7 +95,6 @@ body {
     position: relative;
 }
 
-/* Ícone de lupa posicionado por cima do input */
 .search-icon {
     position: absolute;
     left: 1rem;
@@ -153,7 +151,6 @@ body {
     transform: none;
 }
 
-/* Tela de carregamento, aparece enquanto o back-end tá buscando os produtos */
 .loading-state {
     text-align: center;
     padding: 3rem;
@@ -162,7 +159,6 @@ body {
     margin-bottom: 2rem;
 }
 
-/* O clássico círculo girando */
 .spinner {
     width: 50px;
     height: 50px;
@@ -183,7 +179,7 @@ body {
     font-size: 1.1rem;
 }
 
-/* Tela quando dá erro na busca (ex: falha na API) */
+
 .error-state {
     text-align: center;
     padding: 3rem;
@@ -229,7 +225,6 @@ body {
     transform: translateY(-1px);
 }
 
-/* Bloco que mostra os produtos encontrados */
 .results-section {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
@@ -258,7 +253,6 @@ body {
     font-size: 1rem;
 }
 
-/* Grid dos cards de produto, quebra linha sozinho conforme a tela encolhe */
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -269,7 +263,7 @@ body {
     @apply bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:scale-105;
 }
 
-/* Barrinha colorida que aparece no topo do card no hover */
+
 .product-card::before {
     content: '';
     position: absolute;
@@ -326,7 +320,7 @@ body {
     @apply text-sm;
 }
 
-/* Tela pra quando a busca não retorna nenhum produto */
+
 .empty-state {
     text-align: center;
     padding: 3rem;
@@ -350,7 +344,7 @@ body {
     color: #666;
 }
 
-/* Rodapé da página */
+
 .footer {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
