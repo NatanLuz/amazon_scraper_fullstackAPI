@@ -1,10 +1,4 @@
-/**
- * // Construindo o Frontend
- * Gerenciando a interface do usuário e comunicação com API
- */
 
-// Elementos do DOM necessários
-// Utilizando IDs para facilitar a manipulação
 const elements = {
     keywordInput: document.getElementById('keywordInput'),
     searchBtn: document.getElementById('searchBtn'),
