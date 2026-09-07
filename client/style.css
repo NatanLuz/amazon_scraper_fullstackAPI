@@ -22,7 +22,6 @@ body {
     flex-direction: column;
 }
 
-/* Cabeçalho fixo no topo, com aquele efeito de vidro fosco */
 .header {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
@@ -354,12 +353,10 @@ body {
     color: #666;
 }
 
-/* Ajuda a esconder elemento via JS sem precisar mexer em style inline */
 .hidden {
     display: none !important;
 }
 
-/* A partir daqui é responsivo - telas menores (tablet) */
 @media (max-width: 768px) {
     .header-content {
         padding: 0 1rem;
@@ -401,7 +398,6 @@ body {
     }
 }
 
-/* Telas bem pequenas (celular) */
 @media (max-width: 480px) {
     .logo {
         flex-direction: column;
