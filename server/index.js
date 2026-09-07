@@ -39,7 +39,7 @@ app.use(helmet({
   }
 }));
 
-// Limite de 100kb no body pra evitar payload gigante
+// Colocando limite de 100kb no body pra evitar payload gigante
 app.use(express.json({ limit: '100kb' }));
 
 // Log de cada requisição no console, ajuda a debugar em dev
