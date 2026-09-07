@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
-const { JSDOM } = require('jsdom');
+const { JSDOM, VirtualConsole } = require('jsdom');
 const path = require('path');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -143,13 +143,55 @@ function validateKeyword(query) {
 }
 
 function publicScrapeError(status, error) {
-  if (status === 429 || String(error.message || '').includes('429')) {
+  if (status === 403) {
+    return 'A Amazon recusou a requisição. Tente novamente mais tarde.';
+  }
+  if (status === 429) {
     return 'Muitas requisi\u00e7\u00f5es \u00e0 Amazon. Tente novamente em alguns minutos.';
   }
   return 'N\u00e3o foi poss\u00edvel concluir a busca agora. Tente novamente em instantes.';
 }
 
 // Limita quantas buscas cada IP pode fazer por minuto, pra não tomar bloqueio da Amazon
+function createScraperError(message, statusCode = 502) {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+}
+
+function normalizeRating(ratingText) {
+  if (!ratingText) return 'Sem classifica\u00e7\u00e3o';
+  const ratingMatch = String(ratingText).match(/(\d+(?:[.,]\d+)?)/);
+  if (!ratingMatch) return 'Sem classifica\u00e7\u00e3o';
+  const value = Number.parseFloat(ratingMatch[1].replace(',', '.'));
+  return Number.isFinite(value) ? `${value} estrelas` : 'Sem classifica\u00e7\u00e3o';
+}
+
+function normalizeReviews(reviewsText) {
+  if (!reviewsText) return 'Sem avalia\u00e7\u00f5es';
+  const text = String(reviewsText).trim().replace(/\s+/g, ' ');
+  const compactMatch = text.match(/^(\d+(?:[.,]\d+)?)\s*(mil|k)$/i);
+  if (compactMatch) {
+    const value = Number.parseFloat(compactMatch[1].replace(',', '.')) * 1000;
+    return Number.isFinite(value) ? String(Math.round(value)) : 'Sem avalia\u00e7\u00f5es';
+  }
+  if (/^\d{1,3}(?:\.\d{3})+$/.test(text)) return text.replace(/\./g, '');
+  if (/^\d{1,3}(?:,\d{3})+$/.test(text)) return text.replace(/,/g, '');
+  if (/^\d+$/.test(text)) return text;
+  return 'Sem avalia\u00e7\u00f5es';
+}
+
+function normalizeProductUrl(href) {
+  if (!href || typeof href !== 'string') return '';
+  try {
+    const url = new URL(href, 'https://www.amazon.com.br');
+    if (!['http:', 'https:'].includes(url.protocol) || !url.pathname.includes('/dp/')) return '';
+    return url.href;
+  } catch {
+    return '';
+  }
+}
+
 const scrapeLimiter = rateLimit({
   windowMs: 60 * 1000, // janela de 1 minuto
   max: RATE_LIMIT_MAX, // quantidade de requisições permitida nessa janela
@@ -177,7 +219,11 @@ app.use(express.static(path.join(__dirname, '../public')));
  * @returns {Array} lista de produtos encontrados
  */
 function extractProductsFromHTML(html) {
-  const dom = new JSDOM(html);
+  const virtualConsole = new VirtualConsole();
+  virtualConsole.on('jsdomError', (error) => {
+    if (isDevelopment) console.error('JSDOM:', error.message);
+  });
+  const dom = new JSDOM(html, { virtualConsole });
   const document = dom.window.document;
   const products = [];
 
@@ -188,8 +234,8 @@ function extractProductsFromHTML(html) {
     try {
       // título do produto - tenta alguns seletores porque a Amazon varia o markup
       const titleElement = container.querySelector('h2 a span') ||
-                          container.querySelector('.a-size-medium') ||
-                          container.querySelector('.a-size-base-plus');
+                          container.querySelector('h2 a') ||
+                          container.querySelector('h2');
       const title = titleElement ? titleElement.textContent.trim() : 'Título não encontrado';
 
       // nota do produto (as estrelinhas)
@@ -199,8 +245,7 @@ function extractProductsFromHTML(html) {
       let rating = 'Sem classificação';
       if (ratingElement) {
         const ratingText = ratingElement.textContent || ratingElement.getAttribute('aria-label');
-        const ratingMatch = ratingText.match(/(\d+(?:\.\d+)?)/);
-        rating = ratingMatch ? `${ratingMatch[1]} estrelas` : ratingText;
+        rating = normalizeRating(ratingText);
       }
 
       // quantidade de avaliações
@@ -209,8 +254,7 @@ function extractProductsFromHTML(html) {
       let reviews = 'Sem avaliações';
       if (reviewsElement) {
         const reviewsText = reviewsElement.textContent.trim();
-        const reviewsMatch = reviewsText.match(/(\d+(?:,\d+)*)/);
-        reviews = reviewsMatch ? reviewsMatch[1] : reviewsText;
+        reviews = normalizeReviews(reviewsText);
       }
 
       // imagem do produto
@@ -228,14 +272,7 @@ function extractProductsFromHTML(html) {
       // link pra página do produto
       const productLinkElement = container.querySelector('h2 a') ||
                                 container.querySelector('.a-link-normal[href*="/dp/"]');
-      let productUrl = '';
-      if (productLinkElement) {
-        productUrl = productLinkElement.href;
-        // link relativo, completa com o domínio
-        if (productUrl && productUrl.startsWith('/')) {
-          productUrl = 'https://www.amazon.com.br' + productUrl;
-        }
-      }
+      const productUrl = productLinkElement ? normalizeProductUrl(productLinkElement.getAttribute('href')) : '';
 
       // preço - normalmente vem prontinho no span "a-offscreen", mas às vezes
       // só dá pra montar juntando a parte inteira com a fração
@@ -283,6 +320,17 @@ function extractProductsFromHTML(html) {
   return products;
 }
 
+function validateScrapeDocument(html, products) {
+  if (!html || typeof html !== 'string') {
+    throw createScraperError('Resposta vazia da Amazon');
+  }
+  const lowerHtml = html.toLowerCase();
+  const blocked = ['captcha', 'robot check', 'access denied', 'automated access'].some((marker) => lowerHtml.includes(marker));
+  if (blocked || products.length === 0) {
+    throw createScraperError('Resposta incompatível da Amazon');
+  }
+}
+
 /**
  * Faz a busca na Amazon pra uma palavra-chave e devolve os produtos encontrados.
  * @param {string} keyword - o que o usuário quer pesquisar
@@ -308,11 +356,11 @@ async function scrapeAmazonProducts(keyword) {
     const response = await axios.get(searchUrl, { headers, timeout: REQUEST_TIMEOUT_MS, validateStatus: () => true });
 
     if (response.status !== 200) {
-      const statusText = response.statusText || 'Erro na requisição';
-      throw new Error(`HTTP ${response.status}: ${statusText}`);
+      throw createScraperError(`HTTP ${response.status}`, response.status);
     }
 
     const products = extractProductsFromHTML(response.data);
+    validateScrapeDocument(response.data, products);
 
     console.log(`Encontrados ${products.length} produtos`);
     return products;
@@ -323,35 +371,8 @@ async function scrapeAmazonProducts(keyword) {
       console.error(error.stack);
     }
 
-    // sem conexão? devolve uns produtos fake só pra não deixar a tela vazia na demo
-    if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
-      console.log('Retornando dados de exemplo devido a erro de conexão...');
-      return [
-        {
-          id: 1,
-          title: `Produto de exemplo para "${keyword}"`,
-          rating: '4.5 estrelas',
-          reviews: '1,234',
-          imageUrl: 'https://via.placeholder.com/200x200?text=Produto+Exemplo',
-          productUrl: '#',
-          price: 'R$ 99,99'
-        },
-        {
-          id: 2,
-          title: `Outro produto para "${keyword}"`,
-          rating: '4.0 estrelas',
-          reviews: '567',
-          imageUrl: 'https://via.placeholder.com/200x200?text=Produto+2',
-          productUrl: '#',
-          price: 'R$ 149,99'
-        }
-      ];
-    }
-
-    // qualquer outro erro sobe pra quem chamou tratar
-    const err = new Error(error.message || 'Falha ao buscar dados na Amazon');
-    err.statusCode = error.response?.status || 500;
-    throw err;
+    const statusCode = Number.isInteger(error.statusCode) ? error.statusCode : 502;
+    throw createScraperError('Falha ao buscar dados na Amazon', statusCode);
   }
 }
 
