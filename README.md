@@ -9,7 +9,7 @@
 
 ## 📖 Sobre o projeto
 
-O **Amazon Product Scraper Inteligente** é uma aplicação full stack desenvolvida em Node.js para coletar, tratar e exibir produtos da Amazon Brasil. A solução combina scraping estruturado, uma API REST e uma interface web responsiva para centralizar a pesquisa e a filtragem de produtos.
+O **Amazon Scraper de Produtos Inteligentes** é uma aplicação full stack desenvolvida em Node.js para coletar, tratar e exibir produtos da Amazon Brasil. A solução combina scraping estruturado, uma API REST e uma interface web responsiva para centralizar a pesquisa e a filtragem de produtos.
 
 O projeto demonstra técnicas de Web Scraping, consumo e processamento de HTML, normalização de dados, desenvolvimento de APIs REST, observabilidade, cache, segurança e construção de interfaces modernas.
 
