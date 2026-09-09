@@ -15,14 +15,12 @@ const elements = {
     themeToggle: document.getElementById('themeToggle'),
     menuToggle: document.getElementById('menuToggle'),
     mobileMenu: document.getElementById('mobileMenu'),
-    // filtros
     minPriceInput: document.getElementById('minPriceInput'),
     maxPriceInput: document.getElementById('maxPriceInput'),
     minRatingInput: document.getElementById('minRatingInput'),
     primeOnlyInput: document.getElementById('primeOnlyInput'),
     applyFiltersBtn: document.getElementById('applyFiltersBtn'),
     clearFiltersBtn: document.getElementById('clearFiltersBtn'),
-    // métricas
     metricsPanel: document.getElementById('metricsPanel'),
     metricTotalRequests: document.getElementById('metricTotalRequests'),
     metricScrapeRequests: document.getElementById('metricScrapeRequests'),
@@ -31,7 +29,6 @@ const elements = {
     infiniteScrollSentinel: document.getElementById('infiniteScrollSentinel')
 };
 
-// Estado da aplicação criada
 let currentKeyword = '';
 let isLoading = false;
 let allProducts = [];
@@ -40,9 +37,6 @@ let renderIndex = 0;
 const RENDER_BATCH = 12;
 let infiniteObserver = null;
 
-/**
- * Gerenciamento de tema escuro
- */
 class ThemeManager {
     constructor() {
         this.theme = localStorage.getItem('theme') || 'light';
@@ -76,9 +70,6 @@ class ThemeManager {
     }
 }
 
-/**
- * Função que mostra e esconde os elementos
- */
 function toggleElement(element, show) {
     if (show) {
         element.classList.remove('hidden');
@@ -87,26 +78,18 @@ function toggleElement(element, show) {
     }
 }
 
-/**
- * Função para mostrar estado de carregamento
- */
 function showLoading() {
     isLoading = true;
     elements.searchBtn.disabled = true;
     elements.searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
 
-    // Esconder outros estados
     toggleElement(elements.errorState, false);
     toggleElement(elements.resultsSection, false);
     toggleElement(elements.emptyState, false);
 
-    // Mostrar loading state
     toggleElement(elements.loadingState, true);
 }
 
-/**
- * Função para esconder estado de carregamento
- */
 function hideLoading() {
     isLoading = false;
     elements.searchBtn.disabled = false;
@@ -114,11 +97,7 @@ function hideLoading() {
     toggleElement(elements.loadingState, false);
 }
 
-/**
- * Função para mostrar os erros
- */
 export function showError(message) {
-    // Mensagens de erros durante falha
     const friendlyMessages = {
         'Failed to fetch': 'Não conseguimos conectar ao servidor. Verifique sua conexão com a internet e tente novamente.',
         'HTTP 429': 'Muitas requisições foram feitas. Por favor, aguarde alguns minutos antes de tentar novamente.',
@@ -131,7 +110,6 @@ export function showError(message) {
 
     let friendlyMessage = message;
 
-    // Verificar se a mensagem contém alguma das chaves conhecidas
     for (const [key, value] of Object.entries(friendlyMessages)) {
         if (message.toLowerCase().includes(key.toLowerCase())) {
             friendlyMessage = value;
@@ -146,9 +124,6 @@ export function showError(message) {
     toggleElement(elements.emptyState, false);
 }
 
-/**
- * Função para criar estrelas baseada na classificação
- */
 export function appendStars(container, rating) {
     const ratingMatch = rating.match(/(\d+(?:\.\d+)?)/);
     if (!ratingMatch) return;
@@ -157,21 +132,18 @@ export function appendStars(container, rating) {
     const fullStars = Math.floor(ratingValue);
     const hasHalfStar = ratingValue % 1 >= 0.5;
 
-    // Estrelas cheias
     for (let i = 0; i < fullStars; i++) {
         const star = document.createElement('i');
         star.className = 'fas fa-star';
         container.appendChild(star);
     }
 
-    // Meia estrela
     if (hasHalfStar) {
         const halfStar = document.createElement('i');
         halfStar.className = 'fa-solid fa-star-half-stroke';
         container.appendChild(halfStar);
     }
 
-    // Estrelas vazias
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
     for (let i = 0; i < emptyStars; i++) {
         const emptyStar = document.createElement('i');
@@ -191,9 +163,6 @@ export function getSafeWebUrl(value, allowedProtocols = ['https:', 'http:']) {
     }
 }
 
-/**
- * Função para criar card de produtos
- */
 export function createProductCard(product) {
     const ratingValue = product.rating ? product.rating.match(/(\d+(?:\.\d+)?)/)?.[1] || '0' : '0';
     const fallbackImage = 'https://via.placeholder.com/200x200?text=Sem+Imagem';
@@ -277,35 +246,27 @@ export function createProductCard(product) {
     return card;
 }
 
-/**
- * Função para mostrar os resultados pesquisados
- */
 function showResults(data) {
     const { products, keyword, total } = data;
 
     currentKeyword = keyword;
 
-    // Atualizar informações do cabeçalho criado
     elements.resultsTitle.textContent = `Resultados para "${keyword}"`;
     elements.resultsCount.textContent = `${total} produto${total !== 1 ? 's' : ''} encontrado${total !== 1 ? 's' : ''}`;
     elements.searchKeyword.textContent = `Palavra-chave: "${keyword}"`;
 
-    // Limpar estado de listagem
     elements.productsGrid.innerHTML = '';
     renderIndex = 0;
     allProducts = Array.isArray(products) ? products.slice() : [];
     filteredProducts = applyFiltersToList(allProducts);
 
     if (filteredProducts && filteredProducts.length > 0) {
-        // Primeira leva
         renderNextBatch();
         setupInfiniteScroll();
 
-        // Mostra a seção de resultados
         toggleElement(elements.resultsSection, true);
         toggleElement(elements.emptyState, false);
 
-        // Scroll suave para os resultados após um pequeno delay
         setTimeout(() => {
             elements.resultsSection.scrollIntoView({
                 behavior: 'smooth',
@@ -313,19 +274,14 @@ function showResults(data) {
             });
         }, 500);
     } else {
-        // Mostrar o estado vazio
         toggleElement(elements.emptyState, true);
         toggleElement(elements.resultsSection, false);
     }
 
-    // Esconder os outros estados
     toggleElement(elements.loadingState, false);
     toggleElement(elements.errorState, false);
 }
 
-/**
- * Função para fazer requisição à API
- */
 async function fetchProducts(keyword) {
     try {
         const response = await fetch(`/api/scrape?keyword=${encodeURIComponent(keyword)}`, {
@@ -353,10 +309,8 @@ async function fetchProducts(keyword) {
     }
 }
 
-// --- Filtros ---
 function parsePriceBRL(priceText) {
     if (!priceText) return null;
-    // Remove tudo que não é dígito ou vírgula
     const cleaned = String(priceText).replace(/[^0-9,]/g, '').replace(/\.(?=\d{3})/g, '');
     const normalized = cleaned.replace(',', '.');
     const value = Number.parseFloat(normalized);
@@ -370,7 +324,6 @@ function extractRatingNumber(ratingText) {
 }
 
 function isPrimeProduct(product) {
-    // Heurística simples: se o título contém 'prime' (apenas exemplo)
     return /\bprime\b/i.test(product.title || '') || /prime/i.test(product.badges || '');
 }
 
@@ -405,7 +358,6 @@ function applyFiltersAndRerender() {
     renderNextBatch();
 }
 
-// --- Renderização em lotes / Infinite Scroll ---
 function renderNextBatch() {
     const slice = filteredProducts.slice(renderIndex, renderIndex + RENDER_BATCH);
     slice.forEach((product, idx) => {
@@ -433,9 +385,6 @@ function setupInfiniteScroll() {
     infiniteObserver.observe(elements.infiniteScrollSentinel);
 }
 
-/**
- * Função principal para buscar os produtos
- */
 async function searchProducts() {
     const keyword = elements.keywordInput.value.trim();
 
@@ -445,7 +394,7 @@ async function searchProducts() {
     }
 
     if (isLoading) {
-        return; // Evitar múltiplas requisições simultâneas podendo causar problemas
+        return;
     }
 
     showLoading();
@@ -475,18 +424,12 @@ async function searchProducts() {
     }
 }
 
-/**
- * Função para lidar com Enter no input feito
- */
 function handleEnterKey(event) {
     if (event.key === 'Enter' && !isLoading) {
         searchProducts();
     }
 }
 
-/**
- * Função para > retry em caso de erro pesquisando e fazer novamente a busca
- */
 function retrySearch() {
     if (currentKeyword) {
         elements.keywordInput.value = currentKeyword;
@@ -494,21 +437,15 @@ function retrySearch() {
     }
 }
 
-/**
- * Função para inicializar a aplicação
- */
 function initApp() {
     console.log('🚀 Amazon Scraper Frontend inicializado');
 
-    // Inicializar gerenciador de tema
     window.themeManager = new ThemeManager();
 
-    // Event listeners
     elements.searchBtn.addEventListener('click', searchProducts);
     elements.keywordInput.addEventListener('keypress', handleEnterKey);
     elements.retryBtn.addEventListener('click', retrySearch);
 
-    // Filtros
     if (elements.applyFiltersBtn) {
         elements.applyFiltersBtn.addEventListener('click', applyFiltersAndRerender);
     }
@@ -522,7 +459,6 @@ function initApp() {
         });
     }
 
-    // Mobile menu toggle
     if (elements.menuToggle && elements.mobileMenu) {
         elements.menuToggle.addEventListener('click', () => {
             const isHidden = elements.mobileMenu.classList.contains('hidden');
@@ -536,22 +472,15 @@ function initApp() {
         });
     }
 
-    // Focar no input ao carregar a página sem emição de erros
     elements.keywordInput.focus();
 
-    // Verificar se o servidor está rodando sem problemas
     checkServerHealth();
 
-    // Iniciar polling de métricas
     startMetricsPolling();
 
-    // Adicionar animações suaves
     addSmoothAnimations();
 }
 
-/**
- * Função para verificar saúde do servidor
- */
 async function checkServerHealth() {
     try {
         const response = await fetch('/api/health');
@@ -565,10 +494,8 @@ async function checkServerHealth() {
     }
 }
 
-// --- Métricas ---
 function startMetricsPolling() {
     if (!elements.metricsPanel || !elements.metricTotalRequests) return;
-    // Mostrar painel
     elements.metricsPanel.classList.remove('hidden');
     const update = async () => {
         try {
@@ -581,18 +508,13 @@ function startMetricsPolling() {
             if (elements.metricCacheHits) elements.metricCacheHits.textContent = String(json.cacheHits || 0);
             if (elements.metricRateLimited) elements.metricRateLimited.textContent = String(json.rateLimited || 0);
         } catch (_) {
-            // ignore
         }
     };
     update();
     setInterval(update, 5000);
 }
 
-/**
- * Função para adicionar animações suaves
- */
 function addSmoothAnimations() {
-    // Adicionar animação de fade-in para os cards de produtos
     const observerOptions = {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
@@ -607,7 +529,6 @@ function addSmoothAnimations() {
         });
     }, observerOptions);
 
-    // Observar cards de produtos quando são adicionados
     const productsGrid = document.getElementById('productsGrid');
     const mutationObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
@@ -625,12 +546,10 @@ function addSmoothAnimations() {
     mutationObserver.observe(productsGrid, { childList: true });
 }
 
-// Inicializar aplicação quando o DOM estiver pronto
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
 });
 
-// Exportar funções para uso global (se necessário)
 window.AmazonScraper = {
     searchProducts,
     retrySearch,

@@ -42,11 +42,9 @@ app.use(helmet({
 // Colocando limite de 100kb no body pra evitar payload gigante
 app.use(express.json({ limit: '100kb' }));
 
-// Log de cada requisição no console, ajuda a debugar em dev
 morgan.token('path', (req) => req.path);
 app.use(morgan(':method :path :status :response-time ms'));
 
-// Comprime as respostas antes de mandar pro cliente
 app.use(compression());
 
 // Libera CORS pro front local (vite roda na 5173) e no fim libera geral mesmo,
@@ -68,7 +66,6 @@ app.use(cors({
 const scrapeCache = new Map(); // chave -> { data, expiresAt }
 const CACHE_TTL_MS = CACHE_TTL_MS_ENV; // dá pra configurar via env
 
-// Contadores simples só pra acompanhar como o serviço tá se comportando
 const metrics = {
   startedAt: new Date().toISOString(),
   totalRequests: 0,
@@ -77,7 +74,6 @@ const metrics = {
   rateLimited: 0
 };
 
-// Conta toda requisição que chega, não importa a rota
 app.use((req, res, next) => {
   metrics.totalRequests += 1;
   next();
@@ -87,7 +83,6 @@ function getCache(key) {
   cleanupExpiredCache();
   const entry = scrapeCache.get(key);
   if (!entry) return null;
-  // já expirou, joga fora e finge que não tinha nada
   if (Date.now() > entry.expiresAt) {
     scrapeCache.delete(key);
     return null;
@@ -207,7 +202,6 @@ const scrapeLimiter = rateLimit({
   }
 });
 
-// Serve os arquivos estáticos do build do front (pasta public)
 
 app.use(express.static(path.join(__dirname, '../public')));
 
@@ -227,18 +221,15 @@ function extractProductsFromHTML(html) {
   const document = dom.window.document;
   const products = [];
 
-  // cada card de produto no resultado da busca
   const productContainers = document.querySelectorAll('[data-component-type="s-search-result"]');
 
   productContainers.forEach((container, index) => {
     try {
-      // título do produto - tenta alguns seletores porque a Amazon varia o markup
       const titleElement = container.querySelector('h2 a span') ||
                           container.querySelector('h2 a') ||
                           container.querySelector('h2');
       const title = titleElement ? titleElement.textContent.trim() : 'Título não encontrado';
 
-      // nota do produto (as estrelinhas)
       const ratingElement = container.querySelector('.a-icon-alt') ||
                            container.querySelector('[aria-label*="estrela"]') ||
                            container.querySelector('.a-icon-star-small');
@@ -248,7 +239,6 @@ function extractProductsFromHTML(html) {
         rating = normalizeRating(ratingText);
       }
 
-      // quantidade de avaliações
       const reviewsElement = container.querySelector('a[href*="customerReviews"]') ||
                             container.querySelector('.a-size-base.s-underline-text');
       let reviews = 'Sem avaliações';
@@ -257,25 +247,21 @@ function extractProductsFromHTML(html) {
         reviews = normalizeReviews(reviewsText);
       }
 
-      // imagem do produto
       const imageElement = container.querySelector('img.s-image') ||
                           container.querySelector('.a-image-container img');
       let imageUrl = '';
       if (imageElement) {
         imageUrl = imageElement.src || imageElement.getAttribute('data-src');
-        // às vezes vem sem o protocolo (//...), aí completa com https
+        // URLs sem protocolo aparecem em alguns cards e precisam de https.
         if (imageUrl && imageUrl.startsWith('//')) {
           imageUrl = 'https:' + imageUrl;
         }
       }
 
-      // link pra página do produto
       const productLinkElement = container.querySelector('h2 a') ||
                                 container.querySelector('.a-link-normal[href*="/dp/"]');
       const productUrl = productLinkElement ? normalizeProductUrl(productLinkElement.getAttribute('href')) : '';
 
-      // preço - normalmente vem prontinho no span "a-offscreen", mas às vezes
-      // só dá pra montar juntando a parte inteira com a fração
       const priceElementOffscreen = container.querySelector('.a-price .a-offscreen') ||
                                    container.querySelector('.a-price-current .a-offscreen');
       let price = 'Preço não disponível';
@@ -299,7 +285,6 @@ function extractProductsFromHTML(html) {
         }
       }
 
-      // só entra na lista se tiver pelo menos título ou imagem, senão é lixo
       if (title !== 'Título não encontrado' || imageUrl) {
         products.push({
           id: index + 1,
@@ -312,7 +297,6 @@ function extractProductsFromHTML(html) {
         });
       }
     } catch (error) {
-      // um produto quebrado não pode derrubar os outros, então só loga e segue
       console.error(`Erro ao processar produto ${index + 1}:`, error.message);
     }
   });
@@ -338,7 +322,6 @@ function validateScrapeDocument(html, products) {
  */
 async function scrapeAmazonProducts(keyword) {
   try {
-    // finge ser um navegador de verdade pra Amazon não bloquear de cara
     const headers = {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
       'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -352,7 +335,6 @@ async function scrapeAmazonProducts(keyword) {
 
     console.log(`Buscando produtos na Amazon (${keyword.length} caracteres)`);
 
-    // validateStatus sempre true porque a gente mesmo trata o status abaixo
     const response = await axios.get(searchUrl, { headers, timeout: REQUEST_TIMEOUT_MS, validateStatus: () => true });
 
     if (response.status !== 200) {
@@ -376,7 +358,6 @@ async function scrapeAmazonProducts(keyword) {
   }
 }
 
-// Rota principal: recebe a palavra-chave e devolve os produtos raspados da Amazon
 app.get('/api/scrape', scrapeLimiter, async (req, res) => {
   try {
     const keywordResult = validateKeyword(req.query);
@@ -390,7 +371,6 @@ app.get('/api/scrape', scrapeLimiter, async (req, res) => {
 
     console.log(`Iniciando scraping (${sanitized.length} caracteres)`);
 
-    // se já buscou essa palavra recentemente, devolve do cache e economiza uma requisição
     const cacheKey = `scrape:${sanitized}`;
     const cached = getCache(cacheKey);
     if (cached) {
@@ -432,7 +412,6 @@ app.get('/api/scrape', scrapeLimiter, async (req, res) => {
   }
 });
 
-// Rota simples pra saber se o servidor tá de pé
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
@@ -441,7 +420,6 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Métricas básicas de uso - não deixar isso público sem autenticação em produção
 app.get('/api/metrics', (req, res) => {
   const mem = process.memoryUsage();
   res.json({
@@ -462,12 +440,10 @@ app.get('/api/metrics', (req, res) => {
   });
 });
 
-// Serve o index.html na raiz (entrada do front)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Endpoint só pra listar o que essa API oferece
 app.get('/api', (req, res) => {
   res.json({
     message: 'Amazon Scraper API',
@@ -478,7 +454,6 @@ app.get('/api', (req, res) => {
   });
 });
 
-// Qualquer rota que não seja /api cai aqui e volta pro index.html (SPA)
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) {
     res.sendFile(path.join(__dirname, '../public/index.html'));
@@ -487,7 +462,6 @@ app.get('*', (req, res) => {
   }
 });
 
-// Se algum erro escapar de todo o resto, cai aqui
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const status = err.statusCode || 500;
