@@ -117,7 +117,7 @@ function hideLoading() {
 /**
  * Função para mostrar os erros
  */
-function showError(message) {
+export function showError(message) {
     // Mensagens de erros durante falha
     const friendlyMessages = {
         'Failed to fetch': 'Não conseguimos conectar ao servidor. Verifique sua conexão com a internet e tente novamente.',
@@ -149,7 +149,7 @@ function showError(message) {
 /**
  * Função para criar estrelas baseada na classificação
  */
-function appendStars(container, rating) {
+export function appendStars(container, rating) {
     const ratingMatch = rating.match(/(\d+(?:\.\d+)?)/);
     if (!ratingMatch) return;
 
@@ -180,7 +180,7 @@ function appendStars(container, rating) {
     }
 }
 
-function getSafeWebUrl(value, allowedProtocols = ['https:', 'http:']) {
+export function getSafeWebUrl(value, allowedProtocols = ['https:', 'http:']) {
     if (!value || typeof value !== 'string') return '';
     if (value === '#') return '#';
     try {
@@ -194,7 +194,7 @@ function getSafeWebUrl(value, allowedProtocols = ['https:', 'http:']) {
 /**
  * Função para criar card de produtos
  */
-function createProductCard(product) {
+export function createProductCard(product) {
     const ratingValue = product.rating ? product.rating.match(/(\d+(?:\.\d+)?)/)?.[1] || '0' : '0';
     const fallbackImage = 'https://via.placeholder.com/200x200?text=Sem+Imagem';
     const errorImage = 'https://via.placeholder.com/200x200?text=Erro+na+Imagem';
