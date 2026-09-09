@@ -13,6 +13,7 @@
     "install-server": "npm ci",
     "install-all": "npm run install-server && npm run install-client",
     "test-api": "node -e \"fetch('http://localhost:' + (process.env.PORT || 3000) + '/api/health').then(async response => { if (!response.ok) throw new Error('HTTP ' + response.status); console.log(await response.text()); }).catch(error => { console.error(error.message); process.exitCode = 1; });\"",
+    "test:backend": "node --test server/tests/scraper.test.js",
     "clean": "node -e \"const fs = require('node:fs'); fs.rmSync('public/assets', { recursive: true, force: true }); fs.rmSync('public/index.html', { force: true });\""
   },
   "dependencies": {

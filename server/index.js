@@ -498,15 +498,19 @@ app.use((err, req, res, next) => {
   res.status(status).json({ success: false, error: 'Erro interno do servidor', status });
 });
 
-// Sobe o servidor
-const server = app.listen(PORT, () => {
-  console.log(` Servidor rodando na porta ${PORT}`);
-  console.log(` API disponível em: http://localhost:${PORT}/api/scrape`);
-  console.log(` Health check: http://localhost:${PORT}/api/health`);
-});
+function startServer() {
+  return app.listen(PORT, () => {
+    console.log(` Servidor rodando na porta ${PORT}`);
+    console.log(` API disponível em: http://localhost:${PORT}/api/scrape`);
+    console.log(` Health check: http://localhost:${PORT}/api/health`);
+  });
+}
+
+const server = require.main === module ? startServer() : null;
 
 // Encerra o servidor de forma limpa quando recebe sinal de término
 function shutdown(signal) {
+  if (!server) return;
   console.log(`\nRecebido ${signal}. Encerrando com graça...`);
   server.close(() => {
     console.log('Servidor encerrado.');
@@ -519,4 +523,15 @@ function shutdown(signal) {
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
-module.exports = app;
+module.exports = {
+  app,
+  startServer,
+  validateKeyword,
+  normalizeRating,
+  normalizeReviews,
+  normalizeProductUrl,
+  extractProductsFromHTML,
+  validateScrapeDocument,
+  scrapeAmazonProducts,
+  clearScrapeCache: () => scrapeCache.clear()
+};
