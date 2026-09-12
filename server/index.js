@@ -60,9 +60,9 @@ app.use(cors({
   methods: ['GET'],
 }));
 
-// Cache bem simples em memória, some quando reiniciar o servidor
-const scrapeCache = new Map(); // chave -> { data, expiresAt }
-const CACHE_TTL_MS = CACHE_TTL_MS_ENV; // dá pra configurar via env
+
+const scrapeCache = new Map()
+const CACHE_TTL_MS = CACHE_TTL_MS_ENV; 
 
 const metrics = {
   startedAt: new Date().toISOString(),
