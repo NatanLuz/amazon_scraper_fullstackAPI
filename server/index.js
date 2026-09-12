@@ -39,7 +39,6 @@ app.use(helmet({
   }
 }));
 
-// Colocando limite de 100kb no body pra evitar payload gigante
 app.use(express.json({ limit: '100kb' }));
 
 morgan.token('path', (req) => req.path);
@@ -47,8 +46,7 @@ app.use(morgan(':method :path :status :response-time ms'));
 
 app.use(compression());
 
-// Libera CORS pro front local (vite roda na 5173) e no fim libera geral mesmo,
-// porque isso aqui é só uma demo
+
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
