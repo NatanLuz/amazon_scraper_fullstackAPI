@@ -170,8 +170,8 @@ export function createProductCard(product) {
     const imageUrl = getSafeWebUrl(product.imageUrl) || fallbackImage;
     const productUrl = getSafeWebUrl(product.productUrl);
 
-    const card = document.createElement('div');
-    card.className = 'product-card group';
+    const card = document.createElement('article');
+    card.className = 'product-card';
     card.dataset.productId = String(product.id || '');
 
     const imageWrapper = document.createElement('div');
@@ -185,23 +185,6 @@ export function createProductCard(product) {
         image.src = errorImage;
     }, { once: true });
     imageWrapper.appendChild(image);
-
-    if (ratingValue !== null) {
-        const badge = document.createElement('div');
-        badge.className = 'absolute top-2 right-2 bg-white dark:bg-gray-800 rounded-full px-2 py-1 shadow-lg';
-        const badgeContent = document.createElement('div');
-        badgeContent.className = 'flex items-center gap-1';
-        const badgeIcon = document.createElement('i');
-        badgeIcon.className = 'fas fa-star text-yellow-400 text-xs';
-        badgeIcon.setAttribute('aria-hidden', 'true');
-        const badgeText = document.createElement('span');
-        badgeText.className = 'text-xs font-semibold text-gray-900 dark:text-white';
-        badgeText.textContent = ratingValue;
-        badgeContent.appendChild(badgeIcon);
-        badgeContent.appendChild(badgeText);
-        badge.appendChild(badgeContent);
-        imageWrapper.appendChild(badge);
-    }
 
     const title = document.createElement('h3');
     title.className = 'product-title';
