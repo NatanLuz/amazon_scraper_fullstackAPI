@@ -353,8 +353,13 @@ body {
     color: #666;
 }
 
-.hidden {
+.is-hidden {
     display: none !important;
+}
+
+:where(button, a, input, select):focus-visible {
+    outline: 3px solid #667eea;
+    outline-offset: 3px;
 }
 
 @media (max-width: 768px) {
