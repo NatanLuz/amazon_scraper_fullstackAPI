@@ -428,7 +428,7 @@ function retrySearch() {
 }
 
 function initApp() {
-    console.log('🚀 Amazon Scraper Frontend inicializado');
+    console.log('Amazon Scraper Frontend inicializado');
 
     if (elements.currentYear) {
         elements.currentYear.textContent = String(new Date().getFullYear());
