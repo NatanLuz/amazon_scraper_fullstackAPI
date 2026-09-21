@@ -15,7 +15,7 @@ O projeto demonstra consumo e processamento de HTML, normalização de dados, de
 
 > O projeto depende da estrutura HTML de um serviço externo. Alterações realizadas pela Amazon podem exigir ajustes no processo de scraping.
 
-## Arquitetura
+## Arquitetura do Projeto
 
 ```text
 Frontend (Vite + Tailwind CSS)
