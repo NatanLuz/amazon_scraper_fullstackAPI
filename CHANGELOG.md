@@ -11,7 +11,7 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 ## [1.1.0] - 2024-12-22
 
-### ✨ Adicionado
+### Adicionado
 - **Script de Deploy Automatizado**: Arquivo `deploy.sh` para instalação e deploy com um comando
 - **Configuração de Produção**: Servidor agora serve arquivos estáticos do build
 - **Scripts NPM Melhorados**: Novos comandos para build, deploy e limpeza
@@ -20,68 +20,68 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 - **Fallback para SPA**: Roteamento adequado para aplicação single-page
 - **API Info Endpoint**: Nova rota `/api` para informações da API
 
-### 🔧 Melhorado
+### Melhorado
 - **Segurança**: Vulnerabilidades de dependências corrigidas
 - **Estrutura de Build**: Configuração otimizada do Vite para produção
 - **Error Handling**: Melhor tratamento de erros no servidor
 - **Documentação**: README e INSTALACAO.md completamente reescritos
 - **Scripts de Desenvolvimento**: Comandos mais intuitivos e organizados
 
-### 🐛 Corrigido
+### Corrigido
 - **Vulnerabilidades**: 2 vulnerabilidades de segurança no frontend resolvidas
 - **Build Path**: Configuração correta do diretório de build
 - **Static Files**: Servimento adequado de arquivos estáticos em produção
 - **CORS**: Configuração aprimorada para requisições cross-origin
 
-### 📁 Estrutura
+### Estrutura
 ```
 amazon-scraper/
 ├── server/
-│   └── index.js          # ✅ Atualizado com configuração de produção
+│   └── index.js          # Atualizado com configuração de produção
 ├── client/
-│   ├── index.html        # ✅ Mantido
-│   ├── main.js           # ✅ Mantido  
-│   ├── style.css         # ✅ Mantido
-│   ├── package.json      # ✅ Atualizado com Vite 7.1.3
-│   └── vite.config.js    # ✅ Mantido
-├── public/               # ✨ Novo - Build de produção
-├── deploy.sh            # ✨ Novo - Script de deploy
-├── .env.example         # ✨ Novo - Configurações
-├── CHANGELOG.md         # ✨ Novo - Este arquivo
-├── INSTALACAO.md        # ✅ Completamente reescrito
-├── README.md            # ✅ Mantido com melhorias
-└── package.json         # ✅ Atualizado com novos scripts
+│   ├── index.html        # Mantido
+│   ├── main.js           # Mantido
+│   ├── style.css         # Mantido
+│   ├── package.json      # Atualizado com Vite 7.1.3
+│   └── vite.config.js    # Mantido
+├── public/               # Novo - Build de produção
+├── deploy.sh            # Novo - Script de deploy
+├── .env.example         # Novo - Configurações
+├── CHANGELOG.md         # Novo - Este arquivo
+├── INSTALACAO.md        # Completamente reescrito
+├── README.md            # Mantido com melhorias
+└── package.json         # Atualizado com novos scripts
 ```
 
-### 🚀 Scripts Disponíveis
+### Scripts Disponíveis
 
 | Comando | Status | Descrição |
 |---------|--------|-----------|
-| `npm run dev` | ✅ Mantido | Servidor backend em desenvolvimento |
-| `npm start` | ✅ Mantido | Servidor em produção |
-| `npm run build` | ✅ Mantido | Build do frontend |
-| `npm run build:prod` | ✨ Novo | Build completo com dependências |
-| `npm run deploy` | ✨ Novo | Deploy completo automatizado |
-| `npm run install-all` | ✅ Mantido | Instalar todas as dependências |
-| `npm run test-api` | ✨ Novo | Testar API rapidamente |
-| `npm run clean` | ✨ Novo | Limpar builds anteriores |
-| `./deploy.sh` | ✨ Novo | Script de deploy bash |
+| `npm run dev` | Mantido | Servidor backend em desenvolvimento |
+| `npm start` | Mantido | Servidor em produção |
+| `npm run build` | Mantido | Build do frontend |
+| `npm run build:prod` | Novo | Build completo com dependências |
+| `npm run deploy` | Novo | Deploy completo automatizado |
+| `npm run install-all` | Mantido | Instalar todas as dependências |
+| `npm run test-api` | Novo | Testar API rapidamente |
+| `npm run clean` | Novo | Limpar builds anteriores |
+| `./deploy.sh` | Novo | Script de deploy bash |
 
-### 🔒 Segurança
-- ✅ 0 vulnerabilidades conhecidas
-- ✅ Dependências atualizadas
-- ✅ Headers de segurança configurados
-- ✅ Validação de entrada implementada
+### Segurança
+- 0 vulnerabilidades conhecidas
+- Dependências atualizadas
+- Headers de segurança configurados
+- Validação de entrada implementada
 
-### 📊 Performance
-- ⚡ Build otimizado com Vite 7.1.3
-- ⚡ Arquivos estáticos servidos diretamente
-- ⚡ Gzip habilitado para assets
-- ⚡ CSS e JS minificados
+### Performance
+- Build otimizado com Vite 7.1.3
+- Arquivos estáticos servidos diretamente
+- Gzip habilitado para assets
+- CSS e JS minificados
 
 ## [1.0.0] - 2024-12-21
 
-### ✨ Versão Inicial
+### Versão Inicial
 - Amazon Product Scraper funcional
 - Backend com Express e scraping
 - Frontend com Vite e interface moderna
