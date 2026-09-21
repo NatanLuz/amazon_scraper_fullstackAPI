@@ -22,11 +22,8 @@ const elements = {
     minRatingInput: document.getElementById('minRatingInput'),
     applyFiltersBtn: document.getElementById('applyFiltersBtn'),
     clearFiltersBtn: document.getElementById('clearFiltersBtn'),
-    metricsPanel: document.getElementById('metricsPanel'),
-    metricTotalRequests: document.getElementById('metricTotalRequests'),
-    metricScrapeRequests: document.getElementById('metricScrapeRequests'),
-    metricCacheHits: document.getElementById('metricCacheHits'),
-    metricRateLimited: document.getElementById('metricRateLimited'),
+    apiStatus: document.getElementById('apiStatus'),
+    apiStatusText: document.getElementById('apiStatusText'),
     infiniteScrollSentinel: document.getElementById('infiniteScrollSentinel'),
     currentYear: document.getElementById('currentYear')
 };
@@ -472,41 +469,28 @@ function initApp() {
 
     checkServerHealth();
 
-    startMetricsPolling();
-
 }
 
 async function checkServerHealth() {
     try {
         const response = await fetch('/api/health');
         if (response.ok) {
-            console.log('✅ Servidor está funcionando normalmente');
+            updateApiStatus(true);
         } else {
-            console.warn('⚠️ Servidor pode estar com problemas');
+            updateApiStatus(false);
         }
     } catch (error) {
-        console.warn('⚠️ Não foi possível conectar ao servidor:', error.message);
+        updateApiStatus(false);
     }
 }
 
-function startMetricsPolling() {
-    if (!elements.metricsPanel || !elements.metricTotalRequests) return;
-    elements.metricsPanel.classList.remove('is-hidden');
-    const update = async () => {
-        try {
-            const res = await fetch('/api/metrics');
-            if (!res.ok) return;
-            const json = await res.json();
-            if (!json.success) return;
-            if (elements.metricTotalRequests) elements.metricTotalRequests.textContent = String(json.totalRequests || 0);
-            if (elements.metricScrapeRequests) elements.metricScrapeRequests.textContent = String(json.scrapeRequests || 0);
-            if (elements.metricCacheHits) elements.metricCacheHits.textContent = String(json.cacheHits || 0);
-            if (elements.metricRateLimited) elements.metricRateLimited.textContent = String(json.rateLimited || 0);
-        } catch (_) {
-        }
-    };
-    update();
-    setInterval(update, 5000);
+function updateApiStatus(isOnline) {
+    if (!elements.apiStatus || !elements.apiStatusText) return;
+    elements.apiStatus.classList.remove('is-checking', 'is-online', 'is-offline');
+    elements.apiStatus.classList.add(isOnline ? 'is-online' : 'is-offline');
+    const message = isOnline ? 'API online' : 'API indisponível';
+    elements.apiStatusText.textContent = message;
+    elements.apiStatus.setAttribute('aria-label', message);
 }
 
 document.addEventListener('DOMContentLoaded', () => {

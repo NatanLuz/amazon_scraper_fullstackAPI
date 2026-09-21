@@ -47,7 +47,9 @@
                     <nav id="mobileMenu" class="header-nav hidden sm:flex" aria-label="Navegação principal">
                         <a href="#keywordInput">Início</a>
                         <a href="#resultsSection">Resultados</a>
-                        <a href="/api/health" target="_blank" rel="noopener noreferrer">Status API <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+                        <span id="apiStatus" class="api-status is-checking" role="status" aria-label="Verificando disponibilidade da API">
+                            <span id="apiStatusText">Verificando API</span>
+                        </span>
                     </nav>
                 </div>
             </div>
@@ -139,16 +141,6 @@
                 <p id="emptyMessage" class="state-message">Tente usar uma palavra-chave diferente.</p>
             </div>
 
-            <!-- Métricas secundárias, disponíveis sem competir com a busca -->
-            <details id="metricsPanel" class="metrics-panel is-hidden">
-                <summary>Atividade da API</summary>
-                <dl class="metrics-grid">
-                    <div><dt>Requisições</dt><dd id="metricTotalRequests">0</dd></div>
-                    <div><dt>Consultas à Amazon</dt><dd id="metricScrapeRequests">0</dd></div>
-                    <div><dt>Respostas do cache</dt><dd id="metricCacheHits">0</dd></div>
-                    <div><dt>Limites atingidos</dt><dd id="metricRateLimited">0</dd></div>
-                </dl>
-            </details>
         </main>
 
         <!-- Rodapé da página -->
