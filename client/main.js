@@ -9,6 +9,8 @@ const elements = {
     productsGrid: document.getElementById('productsGrid'),
     resultsTitle: document.getElementById('resultsTitle'),
     resultsCount: document.getElementById('resultsCount'),
+    resultsStatus: document.getElementById('resultsStatus'),
+    emptyMessage: document.getElementById('emptyMessage'),
     searchKeyword: document.getElementById('searchKeyword'),
     errorMessage: document.getElementById('errorMessage'),
     retryBtn: document.getElementById('retryBtn'),
@@ -18,15 +20,12 @@ const elements = {
     minPriceInput: document.getElementById('minPriceInput'),
     maxPriceInput: document.getElementById('maxPriceInput'),
     minRatingInput: document.getElementById('minRatingInput'),
-    primeOnlyInput: document.getElementById('primeOnlyInput'),
     applyFiltersBtn: document.getElementById('applyFiltersBtn'),
     clearFiltersBtn: document.getElementById('clearFiltersBtn'),
-    metricsPanel: document.getElementById('metricsPanel'),
-    metricTotalRequests: document.getElementById('metricTotalRequests'),
-    metricScrapeRequests: document.getElementById('metricScrapeRequests'),
-    metricCacheHits: document.getElementById('metricCacheHits'),
-    metricRateLimited: document.getElementById('metricRateLimited'),
-    infiniteScrollSentinel: document.getElementById('infiniteScrollSentinel')
+    apiStatus: document.getElementById('apiStatus'),
+    apiStatusText: document.getElementById('apiStatusText'),
+    infiniteScrollSentinel: document.getElementById('infiniteScrollSentinel'),
+    currentYear: document.getElementById('currentYear')
 };
 
 let currentKeyword = '';
@@ -36,6 +35,9 @@ let filteredProducts = [];
 let renderIndex = 0;
 const RENDER_BATCH = 12;
 let infiniteObserver = null;
+let hasResults = false;
+let renderVersion = 0;
+const renderTimers = new Set();
 
 class ThemeManager {
     constructor() {
@@ -55,6 +57,7 @@ class ThemeManager {
         } else {
             html.classList.remove('dark');
         }
+        elements.themeToggle?.setAttribute('aria-label', this.theme === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro');
     }
 
     toggleTheme() {
@@ -72,16 +75,23 @@ class ThemeManager {
 
 function toggleElement(element, show) {
     if (show) {
-        element.classList.remove('hidden');
+        element.classList.remove('is-hidden');
     } else {
-        element.classList.add('hidden');
+        element.classList.add('is-hidden');
     }
 }
 
 function showLoading() {
+    resetRendering();
+    hasResults = false;
     isLoading = true;
     elements.searchBtn.disabled = true;
-    elements.searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
+    elements.searchBtn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i><span>Buscando...</span>';
+    elements.resultsSection.setAttribute('aria-busy', 'true');
+    elements.retryBtn.disabled = true;
+    elements.applyFiltersBtn.disabled = true;
+    elements.clearFiltersBtn.disabled = true;
+    if (elements.resultsStatus) elements.resultsStatus.textContent = '';
 
     toggleElement(elements.errorState, false);
     toggleElement(elements.resultsSection, false);
@@ -93,31 +103,18 @@ function showLoading() {
 function hideLoading() {
     isLoading = false;
     elements.searchBtn.disabled = false;
-    elements.searchBtn.innerHTML = '<i class="fas fa-rocket"></i> Buscar Produtos';
+    elements.searchBtn.innerHTML = '<i class="fas fa-search" aria-hidden="true"></i><span>Buscar produtos</span>';
+    elements.resultsSection.setAttribute('aria-busy', 'false');
+    elements.retryBtn.disabled = false;
+    elements.applyFiltersBtn.disabled = false;
+    elements.clearFiltersBtn.disabled = false;
     toggleElement(elements.loadingState, false);
 }
 
 export function showError(message) {
-    const friendlyMessages = {
-        'Failed to fetch': 'Não conseguimos conectar ao servidor. Verifique sua conexão com a internet e tente novamente.',
-        'HTTP 429': 'Muitas requisições foram feitas. Por favor, aguarde alguns minutos antes de tentar novamente.',
-        'HTTP 500': 'Ocorreu um erro interno no servidor. Nossa equipe foi notificada. Tente novamente em alguns minutos.',
-        'HTTP 404': 'O serviço não foi encontrado. Verifique se o servidor está funcionando corretamente.',
-        'HTTP 403': 'Acesso negado. Verifique suas permissões e tente novamente.',
-        'timeout': 'A requisição demorou muito para responder. Verifique sua conexão e tente novamente.',
-        'network': 'Problema de conexão. Verifique sua internet e tente novamente.'
-    };
-
-    let friendlyMessage = message;
-
-    for (const [key, value] of Object.entries(friendlyMessages)) {
-        if (message.toLowerCase().includes(key.toLowerCase())) {
-            friendlyMessage = value;
-            break;
-        }
-    }
-
-    elements.errorMessage.textContent = friendlyMessage;
+    resetRendering();
+    elements.errorMessage.textContent = message;
+    toggleElement(elements.retryBtn, Boolean(currentKeyword));
     toggleElement(elements.errorState, true);
     toggleElement(elements.loadingState, false);
     toggleElement(elements.resultsSection, false);
@@ -125,22 +122,22 @@ export function showError(message) {
 }
 
 export function appendStars(container, rating) {
-    const ratingMatch = rating.match(/(\d+(?:\.\d+)?)/);
-    if (!ratingMatch) return;
-
-    const ratingValue = parseFloat(ratingMatch[1]);
+    const ratingValue = extractRatingNumber(rating);
+    if (ratingValue === null) return;
     const fullStars = Math.floor(ratingValue);
     const hasHalfStar = ratingValue % 1 >= 0.5;
 
     for (let i = 0; i < fullStars; i++) {
         const star = document.createElement('i');
         star.className = 'fas fa-star';
+        star.setAttribute('aria-hidden', 'true');
         container.appendChild(star);
     }
 
     if (hasHalfStar) {
         const halfStar = document.createElement('i');
         halfStar.className = 'fa-solid fa-star-half-stroke';
+        halfStar.setAttribute('aria-hidden', 'true');
         container.appendChild(halfStar);
     }
 
@@ -148,13 +145,14 @@ export function appendStars(container, rating) {
     for (let i = 0; i < emptyStars; i++) {
         const emptyStar = document.createElement('i');
         emptyStar.className = 'far fa-star';
+        emptyStar.setAttribute('aria-hidden', 'true');
         container.appendChild(emptyStar);
     }
 }
 
 export function getSafeWebUrl(value, allowedProtocols = ['https:', 'http:']) {
     if (!value || typeof value !== 'string') return '';
-    if (value === '#') return '#';
+    if (value.trim().startsWith('#') || !value.trim()) return '';
     try {
         const url = new URL(value, window.location.origin);
         return allowedProtocols.includes(url.protocol) ? url.href : '';
@@ -164,14 +162,14 @@ export function getSafeWebUrl(value, allowedProtocols = ['https:', 'http:']) {
 }
 
 export function createProductCard(product) {
-    const ratingValue = product.rating ? product.rating.match(/(\d+(?:\.\d+)?)/)?.[1] || '0' : '0';
+    const ratingValue = extractRatingNumber(product.rating);
     const fallbackImage = 'https://via.placeholder.com/200x200?text=Sem+Imagem';
     const errorImage = 'https://via.placeholder.com/200x200?text=Erro+na+Imagem';
     const imageUrl = getSafeWebUrl(product.imageUrl) || fallbackImage;
     const productUrl = getSafeWebUrl(product.productUrl);
 
-    const card = document.createElement('div');
-    card.className = 'product-card group';
+    const card = document.createElement('article');
+    card.className = 'product-card';
     card.dataset.productId = String(product.id || '');
 
     const imageWrapper = document.createElement('div');
@@ -186,25 +184,10 @@ export function createProductCard(product) {
     }, { once: true });
     imageWrapper.appendChild(image);
 
-    if (product.rating) {
-        const badge = document.createElement('div');
-        badge.className = 'absolute top-2 right-2 bg-white dark:bg-gray-800 rounded-full px-2 py-1 shadow-lg';
-        const badgeContent = document.createElement('div');
-        badgeContent.className = 'flex items-center gap-1';
-        const badgeIcon = document.createElement('i');
-        badgeIcon.className = 'fas fa-star text-yellow-400 text-xs';
-        const badgeText = document.createElement('span');
-        badgeText.className = 'text-xs font-semibold text-gray-900 dark:text-white';
-        badgeText.textContent = ratingValue;
-        badgeContent.appendChild(badgeIcon);
-        badgeContent.appendChild(badgeText);
-        badge.appendChild(badgeContent);
-        imageWrapper.appendChild(badge);
-    }
-
     const title = document.createElement('h3');
     title.className = 'product-title';
     title.textContent = product.title || 'Produto sem t\u00edtulo';
+    title.title = title.textContent;
 
     const price = document.createElement('div');
     price.className = 'product-price';
@@ -213,16 +196,21 @@ export function createProductCard(product) {
     const rating = document.createElement('div');
     rating.className = 'product-rating';
     appendStars(rating, product.rating || '');
-    if (product.rating) {
+    if (ratingValue !== null) {
         const ratingBadge = document.createElement('span');
         ratingBadge.className = 'rating-badge';
         ratingBadge.textContent = product.rating;
         rating.appendChild(ratingBadge);
+    } else {
+        rating.textContent = 'Sem classificação';
     }
 
     const reviews = document.createElement('div');
     reviews.className = 'product-reviews';
-    reviews.textContent = `${product.reviews || '0'} avalia\u00e7\u00f5es`;
+    const reviewCount = /^\d+$/.test(String(product.reviews)) ? Number(product.reviews) : null;
+    reviews.textContent = reviewCount === null || reviewCount === 0
+        ? 'Sem avaliações'
+        : `${reviewCount.toLocaleString('pt-BR')} ${reviewCount === 1 ? 'avaliação' : 'avaliações'}`;
 
     card.appendChild(imageWrapper);
     card.appendChild(title);
@@ -238,75 +226,73 @@ export function createProductCard(product) {
         link.rel = 'noopener noreferrer';
         const linkIcon = document.createElement('i');
         linkIcon.className = 'fas fa-external-link-alt';
+        linkIcon.setAttribute('aria-hidden', 'true');
         link.appendChild(linkIcon);
         link.appendChild(document.createTextNode(' Ver na Amazon'));
         card.appendChild(link);
+    } else {
+        const unavailable = document.createElement('span');
+        unavailable.className = 'product-link-unavailable';
+        unavailable.textContent = 'Link indisponível';
+        card.appendChild(unavailable);
     }
 
     return card;
 }
 
 function showResults(data) {
-    const { products, keyword, total } = data;
-
-    currentKeyword = keyword;
+    const { products, keyword } = data;
 
     elements.resultsTitle.textContent = `Resultados para "${keyword}"`;
-    elements.resultsCount.textContent = `${total} produto${total !== 1 ? 's' : ''} encontrado${total !== 1 ? 's' : ''}`;
     elements.searchKeyword.textContent = `Palavra-chave: "${keyword}"`;
-
-    elements.productsGrid.innerHTML = '';
-    renderIndex = 0;
     allProducts = Array.isArray(products) ? products.slice() : [];
-    filteredProducts = applyFiltersToList(allProducts);
-
-    if (filteredProducts && filteredProducts.length > 0) {
-        renderNextBatch();
-        setupInfiniteScroll();
-
-        toggleElement(elements.resultsSection, true);
-        toggleElement(elements.emptyState, false);
-
-        setTimeout(() => {
-            elements.resultsSection.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }, 500);
-    } else {
-        toggleElement(elements.emptyState, true);
-        toggleElement(elements.resultsSection, false);
-    }
-
+    hasResults = true;
+    applyFiltersAndRerender();
     toggleElement(elements.loadingState, false);
     toggleElement(elements.errorState, false);
 }
 
+const errorMessages = {
+    400: 'Confira a palavra-chave e tente novamente.',
+    403: 'A Amazon recusou a consulta. Tente novamente mais tarde.',
+    429: 'Muitas solicitações. Aguarde alguns minutos antes de tentar novamente.',
+    502: 'Não foi possível consultar o serviço externo. Tente novamente mais tarde.',
+    503: 'O serviço externo está temporariamente indisponível. Tente novamente mais tarde.'
+};
+const genericError = 'Não foi possível concluir a busca. Tente novamente em instantes.';
+// Apenas mensagens públicas conhecidas do contrato da API podem chegar à interface.
+const publicApiMessages = new Set([
+    'Palavra-chave obrigatória',
+    'Informe uma única palavra-chave válida',
+    'Use ao menos 2 caracteres',
+    'Use no máximo 80 caracteres',
+    'Palavra-chave inválida',
+    'A Amazon recusou a requisição. Tente novamente mais tarde.',
+    'Muitas requisições à Amazon. Tente novamente em alguns minutos.',
+    'Muitas requisições. Por favor, tente novamente em instantes.'
+]);
+
 async function fetchProducts(keyword) {
+    let response;
     try {
-        const response = await fetch(`/api/scrape?keyword=${encodeURIComponent(keyword)}`, {
+        response = await fetch(`/api/scrape?keyword=${encodeURIComponent(keyword)}`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' }
         });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        if (!data.success) {
-            throw new Error(data.error || 'Erro desconhecido');
-        }
-
-        return data;
-
-    } catch (error) {
-        console.error('Erro na requisição:', error);
+    } catch {
+        const error = new Error('network');
+        error.publicMessage = errorMessages[502];
         throw error;
     }
+    const data = await response.json().catch(() => null);
+    if (!response.ok || data?.success !== true || !Array.isArray(data.products)) {
+        const error = new Error('search');
+        error.publicMessage = publicApiMessages.has(data?.error)
+            ? data.error
+            : errorMessages[response.status] || genericError;
+        throw error;
+    }
+    return data;
 }
 
 function parsePriceBRL(priceText) {
@@ -319,19 +305,15 @@ function parsePriceBRL(priceText) {
 
 function extractRatingNumber(ratingText) {
     if (!ratingText) return null;
-    const match = String(ratingText).match(/(\d+(?:\.\d+)?)/);
-    return match ? Number.parseFloat(match[1]) : null;
-}
-
-function isPrimeProduct(product) {
-    return /\bprime\b/i.test(product.title || '') || /prime/i.test(product.badges || '');
+    const match = String(ratingText).match(/(\d+(?:[.,]\d+)?)/);
+    const value = match ? Number.parseFloat(match[1].replace(',', '.')) : null;
+    return value > 0 && value <= 5 ? value : null;
 }
 
 function applyFiltersToList(list) {
     const minPrice = elements.minPriceInput?.value ? Number(elements.minPriceInput.value) : null;
     const maxPrice = elements.maxPriceInput?.value ? Number(elements.maxPriceInput.value) : null;
     const minRating = elements.minRatingInput?.value ? Number(elements.minRatingInput.value) : 0;
-    const primeOnly = !!elements.primeOnlyInput?.checked;
 
     return list.filter((p) => {
         const price = parsePriceBRL(p.price);
@@ -339,31 +321,53 @@ function applyFiltersToList(list) {
         if (minPrice !== null && (price === null || price < minPrice)) return false;
         if (maxPrice !== null && (price === null || price > maxPrice)) return false;
         if (minRating > 0 && (rating === null || rating < minRating)) return false;
-        if (primeOnly && !isPrimeProduct(p)) return false;
         return true;
     });
 }
 
 function applyFiltersAndRerender() {
-    elements.productsGrid.innerHTML = '';
-    renderIndex = 0;
+    if (!hasResults) return;
+    resetRendering();
     filteredProducts = applyFiltersToList(allProducts);
-    if (filteredProducts.length === 0) {
-        toggleElement(elements.emptyState, true);
-        toggleElement(elements.resultsSection, false);
-        return;
+    const count = filteredProducts.length;
+    const summary = count === allProducts.length
+        ? `${count} ${count === 1 ? 'produto encontrado' : 'produtos encontrados'}`
+        : `${count} de ${allProducts.length} produtos`;
+    elements.resultsCount.textContent = summary;
+    if (elements.resultsStatus) elements.resultsStatus.textContent = summary;
+    if (elements.emptyMessage) {
+        elements.emptyMessage.textContent = allProducts.length
+            ? 'Nenhum produto corresponde aos filtros. Ajuste os valores ou limpe os filtros.'
+            : 'Nenhum produto encontrado para esta busca. Tente outra palavra-chave.';
     }
-    toggleElement(elements.resultsSection, true);
-    toggleElement(elements.emptyState, false);
-    renderNextBatch();
+    toggleElement(elements.errorState, false);
+    toggleElement(elements.resultsSection, count > 0);
+    toggleElement(elements.emptyState, count === 0);
+    if (count > 0) {
+        renderNextBatch();
+        setupInfiniteScroll();
+    }
+}
+
+function resetRendering() {
+    renderVersion += 1;
+    renderTimers.forEach(clearTimeout);
+    renderTimers.clear();
+    infiniteObserver?.disconnect();
+    elements.productsGrid.replaceChildren();
+    renderIndex = 0;
 }
 
 function renderNextBatch() {
+    const version = renderVersion;
     const slice = filteredProducts.slice(renderIndex, renderIndex + RENDER_BATCH);
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     slice.forEach((product, idx) => {
-        setTimeout(() => {
-            elements.productsGrid.appendChild(createProductCard(product));
-        }, idx * 50);
+        const timer = setTimeout(() => {
+            renderTimers.delete(timer);
+            if (version === renderVersion) elements.productsGrid.appendChild(createProductCard(product));
+        }, reducedMotion ? 0 : idx * 25);
+        renderTimers.add(timer);
     });
     renderIndex += slice.length;
 }
@@ -373,9 +377,10 @@ function setupInfiniteScroll() {
     if (infiniteObserver) {
         infiniteObserver.disconnect();
     }
+    const version = renderVersion;
     infiniteObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && version === renderVersion) {
                 if (renderIndex < filteredProducts.length) {
                     renderNextBatch();
                 }
@@ -386,14 +391,12 @@ function setupInfiniteScroll() {
 }
 
 async function searchProducts() {
+    if (isLoading) return;
     const keyword = elements.keywordInput.value.trim();
+    currentKeyword = keyword;
 
     if (!keyword) {
         showError('Por favor, digite uma palavra-chave para buscar.');
-        return;
-    }
-
-    if (isLoading) {
         return;
     }
 
@@ -404,46 +407,37 @@ async function searchProducts() {
         showResults(data);
 
     } catch (error) {
-        console.error('Erro ao buscar produtos:', error);
-
-        let errorMessage = 'Erro ao buscar produtos.';
-
-        if (error.message.includes('Failed to fetch')) {
-            errorMessage = 'Erro de conexão. Verifique se o servidor está rodando.';
-        } else if (error.message.includes('HTTP 429')) {
-            errorMessage = 'Muitas requisições. Tente novamente em alguns minutos.';
-        } else if (error.message.includes('HTTP 500')) {
-            errorMessage = 'Erro interno do servidor. Tente novamente.';
-        } else if (error.message) {
-            errorMessage = error.message;
-        }
-
-        showError(errorMessage);
+        showError(error.publicMessage || genericError);
     } finally {
         hideLoading();
     }
 }
 
 function handleEnterKey(event) {
-    if (event.key === 'Enter' && !isLoading) {
-        searchProducts();
+    if (event.key === 'Enter' && !event.isComposing && !isLoading) {
+        event.preventDefault();
+        return searchProducts();
     }
 }
 
 function retrySearch() {
     if (currentKeyword) {
         elements.keywordInput.value = currentKeyword;
-        searchProducts();
+        return searchProducts();
     }
 }
 
 function initApp() {
-    console.log('🚀 Amazon Scraper Frontend inicializado');
+    console.log('Amazon Scraper Frontend inicializado');
+
+    if (elements.currentYear) {
+        elements.currentYear.textContent = String(new Date().getFullYear());
+    }
 
     window.themeManager = new ThemeManager();
 
     elements.searchBtn.addEventListener('click', searchProducts);
-    elements.keywordInput.addEventListener('keypress', handleEnterKey);
+    elements.keywordInput.addEventListener('keydown', handleEnterKey);
     elements.retryBtn.addEventListener('click', retrySearch);
 
     if (elements.applyFiltersBtn) {
@@ -454,7 +448,6 @@ function initApp() {
             if (elements.minPriceInput) elements.minPriceInput.value = '';
             if (elements.maxPriceInput) elements.maxPriceInput.value = '';
             if (elements.minRatingInput) elements.minRatingInput.value = '0';
-            if (elements.primeOnlyInput) elements.primeOnlyInput.checked = false;
             applyFiltersAndRerender();
         });
     }
@@ -476,79 +469,33 @@ function initApp() {
 
     checkServerHealth();
 
-    startMetricsPolling();
-
-    addSmoothAnimations();
 }
 
 async function checkServerHealth() {
     try {
         const response = await fetch('/api/health');
         if (response.ok) {
-            console.log('✅ Servidor está funcionando normalmente');
+            updateApiStatus(true);
         } else {
-            console.warn('⚠️ Servidor pode estar com problemas');
+            updateApiStatus(false);
         }
     } catch (error) {
-        console.warn('⚠️ Não foi possível conectar ao servidor:', error.message);
+        updateApiStatus(false);
     }
 }
 
-function startMetricsPolling() {
-    if (!elements.metricsPanel || !elements.metricTotalRequests) return;
-    elements.metricsPanel.classList.remove('hidden');
-    const update = async () => {
-        try {
-            const res = await fetch('/api/metrics');
-            if (!res.ok) return;
-            const json = await res.json();
-            if (!json.success) return;
-            if (elements.metricTotalRequests) elements.metricTotalRequests.textContent = String(json.totalRequests || 0);
-            if (elements.metricScrapeRequests) elements.metricScrapeRequests.textContent = String(json.scrapeRequests || 0);
-            if (elements.metricCacheHits) elements.metricCacheHits.textContent = String(json.cacheHits || 0);
-            if (elements.metricRateLimited) elements.metricRateLimited.textContent = String(json.rateLimited || 0);
-        } catch (_) {
-        }
-    };
-    update();
-    setInterval(update, 5000);
-}
-
-function addSmoothAnimations() {
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, observerOptions);
-
-    const productsGrid = document.getElementById('productsGrid');
-    const mutationObserver = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
-                if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains('product-card')) {
-                    node.style.opacity = '0';
-                    node.style.transform = 'translateY(20px)';
-                    node.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                    observer.observe(node);
-                }
-            });
-        });
-    });
-
-    mutationObserver.observe(productsGrid, { childList: true });
+function updateApiStatus(isOnline) {
+    if (!elements.apiStatus || !elements.apiStatusText) return;
+    elements.apiStatus.classList.remove('is-checking', 'is-online', 'is-offline');
+    elements.apiStatus.classList.add(isOnline ? 'is-online' : 'is-offline');
+    const message = isOnline ? 'API online' : 'API indisponível';
+    elements.apiStatusText.textContent = message;
+    elements.apiStatus.setAttribute('aria-label', message);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
-});
+}, { once: true });
 
 window.AmazonScraper = {
     searchProducts,

@@ -1,14 +1,14 @@
 #!/bin/bash
 
-echo "🚀 Iniciando deploy do Amazon Scraper..."
+echo "Iniciando deploy do Amazon Scraper..."
 
-# Cores para output
+# Cores para mensagens do terminal
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# Função para o log colorido
+# Mensagens padronizadas
 log_info() {
     echo -e "${GREEN}[INFO]${NC} $1"
 }
@@ -61,7 +61,7 @@ if [ ! -f "public/index.html" ]; then
     exit 1
 fi
 
-log_info "✅ Deploy concluído com sucesso!"
+log_info "Deploy concluído com sucesso."
 log_info "Para iniciar o servidor em produção, execute:"
 log_info "  npm start"
 log_info ""

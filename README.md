@@ -1,82 +1,77 @@
-# Projeto Amazon Scraper de Produtos Inteligentes
+# Amazon Scraper de Produtos
 
-[![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat\&logo=node.js\&logoColor=white)]()
-[![Express](https://img.shields.io/badge/Express-000000?style=flat\&logo=express\&logoColor=white)]()
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)]()
+[![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)]()
 [![Axios](https://img.shields.io/badge/Axios-5A29E4?style=flat)]()
 [![JSDOM](https://img.shields.io/badge/JSDOM-000000?style=flat)]()
-[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat\&logo=vite\&logoColor=white)]()
-[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=flat\&logo=tailwind-css\&logoColor=white)]()
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)]()
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)]()
 
-## 📖 Sobre o projeto
+## Sobre o projeto
 
-O **Amazon Scraper de Produtos Inteligentes** é uma aplicação full stack desenvolvida em Node.js para coletar, tratar e exibir produtos da Amazon Brasil. A solução combina scraping estruturado, uma API REST e uma interface web responsiva para centralizar a pesquisa e a filtragem de produtos.
+O **Amazon Scraper de Produtos** é uma aplicação full stack em Node.js para consultar, tratar e exibir produtos da Amazon Brasil. A solução combina scraping estruturado, API REST e uma interface web responsiva para pesquisar e comparar produtos.
 
-O projeto demonstra técnicas de Web Scraping, consumo e processamento de HTML, normalização de dados, desenvolvimento de APIs REST, observabilidade, cache, segurança e construção de interfaces modernas.
+O projeto demonstra consumo e processamento de HTML, normalização de dados, desenvolvimento de APIs REST, cache, rate limit, headers de segurança, tratamento de erros e construção de interface com HTML, CSS, JavaScript, Vite e Tailwind CSS.
 
-## Arquitetura da Aplicação
+> O projeto depende da estrutura HTML de um serviço externo. Alterações realizadas pela Amazon podem exigir ajustes no processo de scraping.
+
+## Arquitetura
 
 ```text
 Frontend (Vite + Tailwind CSS)
-            ↓
+        |
 API REST (Node.js + Express)
-            ↓
+        |
 Axios
-            ↓
+        |
 JSDOM
-            ↓
+        |
 Processamento e normalização dos dados
-            ↓
+        |
 Resposta JSON
 ```
 
-O frontend consome a API e apresenta os produtos em uma grade responsiva. No backend, o Axios realiza as requisições HTTP, o JSDOM interpreta o conteúdo HTML e os dados coletados são normalizados antes do retorno em JSON.
-
-> O projeto depende da estrutura HTML de um serviço externo. Alterações realizadas pela Amazon podem exigir adaptações no processo de scraping.
+O frontend consome a API e apresenta os produtos em uma grade responsiva. No backend, o Axios realiza as requisições HTTP, o JSDOM interpreta o HTML e os dados coletados são normalizados antes do retorno em JSON.
 
 ## Funcionalidades
 
-## Scraping e dados
+### Scraping e dados
 
 - Coleta automatizada de produtos da Amazon Brasil;
 - pesquisa por palavra-chave;
-- requisições HTTP realizadas com Axios;
 - parsing do HTML com JSDOM;
-- normalização e estruturação dos dados;
-- disponibilização dos resultados por uma API REST em JSON.
+- normalização de título, preço, avaliação, reviews, imagem e URL;
+- disponibilização dos resultados por API REST em JSON;
+- cache em memória com TTL.
 
-## Filtros
+### Interface
 
-- Avaliação mínima;
-- faixa de preço mínimo e máximo;
-- exibição exclusiva de produtos Prime.
+- Layout responsivo para desktop e mobile;
+- busca com feedback de carregamento;
+- filtros locais por preço mínimo, preço máximo e avaliação mínima;
+- contador consistente após filtros;
+- scroll progressivo para renderização dos cards;
+- modo claro/escuro com persistência;
+- retry manual para repetir a última busca tentada;
+- tratamento amigável de erros HTTP e falhas externas;
+- status discreto da API com `API online` ou `API indisponível`;
+- footer com ano dinâmico.
 
-## Interface
+### Observabilidade, desempenho e segurança
 
-- Layout responsivo e mobile-first;
-- grid de produtos;
-- scroll infinito para carregamento progressivo;
-- feedback visual durante carregamentos e erros;
-- modo escuro com persistência;
-- consumo da API por `fetch`;
-- painel de métricas em tempo real.
-
-## Observabilidade, desempenho e segurança
-
-- Cache em memória com TTL;
-- endpoint de Health Check;
-- endpoint de métricas;
-- monitoramento de requisições e scraping;
-- monitoramento de uptime, memória, cache hits e rate limiting;
-- limitação de requisições para mitigação de abuso;
-- cabeçalhos de segurança;
+- Endpoint de health check;
+- endpoint de métricas mantido no backend;
+- rate limit para mitigar abuso;
+- headers de segurança com Helmet;
 - compressão das respostas;
 - registro de requisições;
 - validação dos parâmetros de entrada;
-- tratamento centralizado de erros e respostas padronizadas.
+- tratamento centralizado de erros.
 
 ## Endpoints
 
 ```http
+GET /api
 GET /api/health
 GET /api/metrics
 GET /api/scrape?keyword=produto
@@ -84,23 +79,19 @@ GET /api/scrape?keyword=produto
 
 O parâmetro `keyword` define o termo utilizado na pesquisa dos produtos.
 
-## Screenshots
+## Interface
 
-## Interface principal
+### Desktop
 
-![Interface principal do Amazon Product Scraper](https://i.imgur.com/y5aWKLi.png)
+![Interface desktop do Amazon Scraper](docs/images/resultados-desktop.png)
 
-## Resultados e filtros
+### Mobile
 
-![Resultados e filtros da aplicação](https://i.imgur.com/OXFpdoq.png)
-
-## Visualização adicional
-
-![Visualização adicional da aplicação](https://i.imgur.com/ordYqb9.png)
+![Interface mobile do Amazon Scraper](docs/images/resultados-mobile.png)
 
 ## Tecnologias
 
-## Backend
+### Backend
 
 - Node.js;
 - Express;
@@ -111,33 +102,30 @@ O parâmetro `keyword` define o termo utilizado na pesquisa dos produtos.
 - Compression;
 - Express Rate Limit.
 
-## Frontend
+### Frontend
 
 - Vite;
 - Tailwind CSS;
-- JavaScript.
-
-## Testes
-
+- JavaScript;
 - Vitest;
 - JSDOM.
 
 ## Como executar
 
-## Pré-requisitos
+### Pré-requisitos
 
 - Git;
 - Node.js `^20.19.0 || >=22.12.0`;
 - npm.
 
-## Clonar o repositório
+### Clonar o repositório
 
 ```powershell
 git clone https://github.com/NatanLuz/amazon_scraper_fullstackAPI.git
 cd amazon_scraper_fullstackAPI
 ```
 
-## Instalar as dependências
+### Instalar as dependências
 
 Na raiz, instale as dependências do backend e do frontend de forma reproduzível com os lockfiles:
 
@@ -147,23 +135,15 @@ npm run install-all
 
 Para instalar separadamente, use `npm run install-server` e `npm run install-client`.
 
-## Executar o backend
+### Executar em desenvolvimento
 
-Na raiz do projeto, execute:
+Em um terminal, inicie o backend:
 
 ```powershell
-npm start
+npm run dev
 ```
 
-A API ficará disponível em:
-
-```text
-http://localhost:3000
-```
-
-## Executar o frontend
-
-Em outro terminal, execute:
+Em outro terminal, inicie o frontend:
 
 ```powershell
 cd client
@@ -176,48 +156,80 @@ A interface ficará disponível em:
 http://localhost:5173
 ```
 
-## Build pela raiz
+A API ficará disponível em:
 
-Para compilar o frontend e servi-lo pelo backend em `http://localhost:3000`:
+```text
+http://localhost:3000
+```
+
+### Executar build de produção
+
+Para compilar o frontend e servi-lo pelo backend:
 
 ```powershell
 npm run build
 npm start
 ```
 
-`npm run build:prod` reutiliza esse build sem instalar dependências. `npm run deploy` compila e inicia localmente; não publica em uma plataforma externa.
+Depois do build, a aplicação fica disponível em `http://localhost:3000`.
+
+`npm run build:prod` reutiliza o build sem instalar dependências. `npm run deploy` compila e inicia localmente; não publica em uma plataforma externa.
+
+## Testes
+
+Execute os testes do backend:
+
+```powershell
+npm run test:backend
+```
+
+Execute os testes do frontend:
+
+```powershell
+cd client
+npm test -- --run
+```
+
+Estado atual validado:
+
+- backend: 9 testes;
+- frontend: 14 testes;
+- total: 23/23;
+- build do client: OK;
+- build pela raiz: OK.
 
 ## Verificação funcional
 
-Após iniciar os dois serviços:
+Após iniciar backend e frontend:
 
 1. Realize uma busca por palavra-chave;
-2. valide o retorno dos produtos pela API;
-3. aplique os filtros de preço, avaliação e Prime;
-4. verifique o funcionamento do scroll infinito;
-5. consulte as métricas em `/api/metrics`;
-6. repita uma requisição para verificar o funcionamento do cache.
+2. verifique cards, imagens, preços, avaliações, reviews e links;
+3. aplique filtros de preço e avaliação;
+4. confirme o contador de resultados;
+5. teste o retry manual após uma falha simulada ou real;
+6. confirme o status `API online` ou `API indisponível`.
 
-## 📂 Estrutura do projeto
-
-A aplicação separa o backend, o frontend e os testes automatizados:
+## Estrutura do projeto
 
 ```text
 amazon_scraper_fullstackAPI/
 ├── server/
 ├── client/
+├── docs/
+│   └── images/
 ├── package.json
 ├── README.md
 └── ...
 ```
 
-- `server/`: API REST, scraping, cache, observabilidade e middlewares;
-- `client/`: interface web desenvolvida com Vite e Tailwind CSS;
-- `client/src/__tests__/`: testes automatizados executados com Vitest (`npm --prefix client test -- --run`);
+- `server/`: API REST, scraping, cache, métricas e middlewares;
+- `client/`: interface web desenvolvida com Vite, Tailwind CSS e JavaScript;
+- `client/src/__tests__/`: testes automatizados executados com Vitest;
+- `docs/images/`: screenshots locais usadas na documentação;
 - `package.json`: dependências e scripts do projeto;
-- `README.md`: documentação técnica.
+- `README.md`: documentação técnica principal.
 
-## 👤 Autor
+## Autor
 
 **Natan Da Luz**
 
@@ -225,6 +237,6 @@ amazon_scraper_fullstackAPI/
 - Portfólio: [portfolionatan.vercel.app](https://portfolionatan.vercel.app/)
 - E-mail: [natandaluz01@gmail.com](mailto:natandaluz01@gmail.com)
 
-## 📄 Licença
+## Licença
 
 Este projeto está sem uma licença definida no momento.

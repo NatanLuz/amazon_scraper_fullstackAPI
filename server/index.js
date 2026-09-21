@@ -19,7 +19,7 @@ const CACHE_MAX_ENTRIES = 100;
 const KEYWORD_MAX_LENGTH = 80;
 const isDevelopment = process.env.NODE_ENV === 'development';
 
-// Helmet cuida de uns headers de segurança padrão pra gente não ter que fazer na mão
+// Helmet define headers de segurança padrão para a aplicação.
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
   contentSecurityPolicy: {
@@ -145,7 +145,7 @@ function publicScrapeError(status, error) {
   return 'N\u00e3o foi poss\u00edvel concluir a busca agora. Tente novamente em instantes.';
 }
 
-// Limita quantas buscas cada IP pode fazer por minuto, pra não tomar bloqueio da Amazon
+// Limita buscas por IP para reduzir abuso e pressão sobre o serviço externo.
 function createScraperError(message, statusCode = 502) {
   const error = new Error(message);
   error.statusCode = statusCode;
@@ -204,9 +204,9 @@ const scrapeLimiter = rateLimit({
 app.use(express.static(path.join(__dirname, '../public')));
 
 /**
- * Vasculha o HTML da página de busca da Amazon e monta a lista de produtos.
- * Os seletores foram pegos olhando o HTML atual do site, então se a Amazon
- * mudar o layout isso aqui provavelmente quebra e precisa ser ajustado.
+ * Extrai produtos do HTML de resultados da Amazon.
+ * Os seletores dependem do layout atual do serviço externo e podem exigir
+ * manutenção se essa estrutura mudar.
  * @param {string} html - HTML da página de resultados
  * @returns {Array} lista de produtos encontrados
  */
@@ -314,7 +314,7 @@ function validateScrapeDocument(html, products) {
 }
 
 /**
- * Faz a busca na Amazon pra uma palavra-chave e devolve os produtos encontrados.
+ * Busca produtos na Amazon para uma palavra-chave validada.
  * @param {string} keyword - o que o usuário quer pesquisar
  * @returns {Promise<Array>} produtos encontrados
  */
@@ -472,23 +472,23 @@ app.use((err, req, res, next) => {
 
 function startServer() {
   return app.listen(PORT, () => {
-    console.log(` Servidor rodando na porta ${PORT}`);
-    console.log(` API disponível em: http://localhost:${PORT}/api/scrape`);
-    console.log(` Health check: http://localhost:${PORT}/api/health`);
+    console.log(`Servidor rodando na porta ${PORT}`);
+    console.log(`API disponível em: http://localhost:${PORT}/api/scrape`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
   });
 }
 
 const server = require.main === module ? startServer() : null;
 
-// Encerra o servidor de forma limpa quando recebe sinal de término
+// Encerra o servidor de forma limpa quando recebe sinal de término.
 function shutdown(signal) {
   if (!server) return;
-  console.log(`\nRecebido ${signal}. Encerrando com graça...`);
+  console.log(`\nRecebido ${signal}. Encerrando com segurança...`);
   server.close(() => {
     console.log('Servidor encerrado.');
     process.exit(0);
   });
-  // se não encerrar sozinho a tempo, força a saída
+  // Força a saída caso o encerramento não finalize dentro do prazo.
   setTimeout(() => process.exit(1), 10_000).unref();
 }
 

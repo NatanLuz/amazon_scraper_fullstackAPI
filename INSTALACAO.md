@@ -1,8 +1,8 @@
-# 🚀 Guia de Instalação - Amazon Scraper
+# Guia de Instalação - Amazon Scraper
 
 Este guia fornece instruções completas para instalar e executar o Amazon Product Scraper.
 
-## 📋 Pré-requisitos
+## Pré-requisitos
 
 Antes de começar, certifique-se de ter instalado:
 
@@ -17,7 +17,7 @@ node --version
 npm --version
 ```
 
-## 📥 Instalação
+## Instalação
 
 ### Método 1: Instalação pelos scripts npm (Recomendado)
 
@@ -57,7 +57,7 @@ npm run install-client
 npm run install-all
 ```
 
-## 🔧 Configuração
+## Configuração
 
 ### Variáveis de Ambiente (Opcional)
 
@@ -74,7 +74,7 @@ PORT=3000
 # RATE_LIMIT_MAX=15
 ```
 
-## 🚀 Executando a Aplicação
+## Executando a Aplicação
 
 ### Desenvolvimento
 
@@ -107,7 +107,7 @@ npm start
 
 Acesse: http://localhost:3000
 
-## 📋 Scripts Disponíveis
+## Scripts Disponíveis
 
 | Comando | Descrição |
 |---------|-----------|
@@ -122,7 +122,7 @@ Acesse: http://localhost:3000
 | `npm run test-api` | Consulta o health check com fetch nativo do Node; falha em erro HTTP ou de conexão |
 | `npm run clean` | Limpa arquivos de build |
 
-## 🔍 Verificação
+## Verificação
 
 ### Testar API
 
@@ -138,7 +138,7 @@ Invoke-RestMethod http://localhost:3000/api/metrics
 Invoke-RestMethod "http://localhost:3000/api/scrape?keyword=smartphone"
 ```
 
-## 🐛 Solução de Problemas
+## Solução de Problemas
 
 ### Erro: "porta já em uso"
 ```powershell
@@ -161,7 +161,7 @@ npm run clean
 npm run build
 ```
 
-## 📁 Estrutura de Arquivos
+## Estrutura de Arquivos
 
 ```
 amazon_scraper_fullstackAPI/
@@ -178,14 +178,14 @@ amazon_scraper_fullstackAPI/
 └── package.json         # Dependências backend
 ```
 
-## 🔒 Segurança
+## Segurança
 
 - Consulte `npm audit` e `npm audit --omit=dev` na raiz e no client para o diagnóstico de dependências atual.
-- ✅ CORS configurado
-- ✅ Validação de entrada
-- ✅ Headers de segurança
+- CORS configurado
+- Validação de entrada
+- Headers de segurança
 
-## 🌐 Deploy
+## Deploy
 
 ### Deploy Local
 ```powershell
@@ -201,7 +201,7 @@ O script `deploy` apenas compila e inicia a aplicação localmente; não publica
 3. Configure proxy reverso (nginx/apache) se necessário
 4. Configure PM2 para gerenciamento de processo (opcional)
 
-## ✅ Checklist de Instalação
+## Checklist de Instalação
 
 - [ ] Node.js instalado
 - [ ] Dependências instaladas (`npm run install-all`)
@@ -212,7 +212,7 @@ O script `deploy` apenas compila e inicia a aplicação localmente; não publica
 
 ---
 
-**Instalação bem-sucedida!** 🎉
+**Instalação bem-sucedida.**
 
 Sua aplicação Amazon Scraper está pronta para uso!
 
