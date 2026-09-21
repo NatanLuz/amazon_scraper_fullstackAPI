@@ -27,7 +27,8 @@ const elements = {
     metricScrapeRequests: document.getElementById('metricScrapeRequests'),
     metricCacheHits: document.getElementById('metricCacheHits'),
     metricRateLimited: document.getElementById('metricRateLimited'),
-    infiniteScrollSentinel: document.getElementById('infiniteScrollSentinel')
+    infiniteScrollSentinel: document.getElementById('infiniteScrollSentinel'),
+    currentYear: document.getElementById('currentYear')
 };
 
 let currentKeyword = '';
@@ -431,6 +432,10 @@ function retrySearch() {
 
 function initApp() {
     console.log('🚀 Amazon Scraper Frontend inicializado');
+
+    if (elements.currentYear) {
+        elements.currentYear.textContent = String(new Date().getFullYear());
+    }
 
     window.themeManager = new ThemeManager();
 
