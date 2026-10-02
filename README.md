@@ -11,6 +11,7 @@
 
 O **Amazon Scraper de Produtos** é uma aplicação full stack em Node.js para consultar, tratar e exibir produtos da Amazon Brasil. A solução combina scraping estruturado, API REST e uma interface web responsiva para pesquisar e comparar produtos.
 
+
 O projeto demonstra consumo e processamento de HTML, normalização de dados, desenvolvimento de APIs REST, cache, rate limit, headers de segurança, tratamento de erros e construção de interface com HTML, CSS, JavaScript, Vite e Tailwind CSS.
 
 
@@ -45,7 +46,7 @@ O frontend consome a API e apresenta os produtos em uma grade responsiva. No bac
 - disponibilização dos resultados por API REST em JSON;
 - cache em memória com TTL.
 
-### Interface
+## Interface
 
 - Layout responsivo para desktop e mobile;
 - busca com feedback de carregamento;
@@ -59,7 +60,7 @@ O frontend consome a API e apresenta os produtos em uma grade responsiva. No bac
 - footer com ano dinâmico.
 
 
-### Observabilidade, desempenho e segurança
+## Observabilidade, desempenho e segurança
 
 - Endpoint de health check;
 - endpoint de métricas mantido no backend;
@@ -83,17 +84,17 @@ O parâmetro `keyword` define o termo utilizado na pesquisa dos produtos.
 
 ## Interface
 
-### Desktop
+## Desktop
 
 ![Interface desktop do Amazon Scraper](docs/images/resultados-desktop.png)
 
-### Mobile
+## Mobile
 
 ![Interface mobile do Amazon Scraper](docs/images/resultados-mobile.png)
 
 ## Tecnologias
 
-### Backend
+## Backend
 
 - Node.js;
 - Express;
@@ -104,7 +105,7 @@ O parâmetro `keyword` define o termo utilizado na pesquisa dos produtos.
 - Compression;
 - Express Rate Limit.
 
-### Frontend
+## Frontend
 
 - Vite;
 - Tailwind CSS;
