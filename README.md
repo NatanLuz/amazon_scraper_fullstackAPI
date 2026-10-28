@@ -37,7 +37,7 @@ O frontend consome a API e apresenta os produtos em uma grade responsiva. No bac
 
 ## Funcionalidades
 
-### Scraping e dados
+## Scraping e dados
 
 - Coleta automatizada de produtos da Amazon Brasil;
 - pesquisa por palavra-chave;
@@ -115,13 +115,13 @@ O parâmetro `keyword` define o termo utilizado na pesquisa dos produtos.
 
 ## Como executar
 
-### Pré-requisitos
+## Pré-requisitos
 
 - Git;
 - Node.js `^20.19.0 || >=22.12.0`;
 - npm.
 
-### Clonar o repositório
+## Clonar o repositório
 
 ```powershell
 git clone https://github.com/NatanLuz/amazon_scraper_fullstackAPI.git
