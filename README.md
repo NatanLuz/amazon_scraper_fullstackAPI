@@ -1,4 +1,4 @@
-# Amazon Scraper de Produtos
+# Amazon Product Scraper
 
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat&logo=node.js&logoColor=white)]()
 [![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)]()
@@ -7,69 +7,66 @@
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)]()
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)]()
 
-## Sobre o projeto
+## About the project
 
-O **Amazon Scraper de Produtos** é uma aplicação full stack em Node.js para consultar, tratar e exibir produtos da Amazon Brasil. A solução combina scraping estruturado, API REST e uma interface web responsiva para pesquisar e comparar produtos.
+**Amazon Product Scraper** is a full-stack Node.js application for querying, processing, and displaying products from Amazon Brazil. The solution combines structured scraping, a REST API, and a responsive web interface for searching and comparing products.
 
+The project demonstrates HTML consumption and processing, data normalization, REST API development, caching, rate limiting, security headers, error handling, and interface development with HTML, CSS, JavaScript, Vite, and Tailwind CSS.
 
-O projeto demonstra consumo e processamento de HTML, normalização de dados, desenvolvimento de APIs REST, cache, rate limit, headers de segurança, tratamento de erros e construção de interface com HTML, CSS, JavaScript, Vite e Tailwind CSS.
+> The project depends on the HTML structure of an external service. Changes made by Amazon may require adjustments to the scraping process.
 
-
-> O projeto depende da estrutura HTML de um serviço externo. Alterações realizadas pela Amazon podem exigir ajustes no processo de scraping.
-
-## Arquitetura do Projeto
+## Project architecture
 
 ```text
 Frontend (Vite + Tailwind CSS)
         |
-API REST (Node.js + Express)
+REST API (Node.js + Express)
         |
 Axios
         |
 JSDOM
         |
-Processamento e normalização dos dados
+Data processing and normalization
         |
-Resposta JSON
+JSON response
 ```
 
-O frontend consome a API e apresenta os produtos em uma grade responsiva. No backend, o Axios realiza as requisições HTTP, o JSDOM interpreta o HTML e os dados coletados são normalizados antes do retorno em JSON.
+The frontend consumes the API and displays products in a responsive grid. On the backend, Axios performs HTTP requests, JSDOM parses the HTML, and the collected data is normalized before being returned as JSON.
 
-## Funcionalidades
+## Features
 
-## Scraping e dados
+## Scraping and data
 
-- Coleta automatizada de produtos da Amazon Brasil;
-- pesquisa por palavra-chave;
-- parsing do HTML com JSDOM;
-- normalização de título, preço, avaliação, reviews, imagem e URL;
-- disponibilização dos resultados por API REST em JSON;
-- cache em memória com TTL.
+- Automated collection of products from Amazon Brazil;
+- keyword search;
+- HTML parsing with JSDOM;
+- normalization of title, price, rating, reviews, image, and URL;
+- results made available through a REST API in JSON format;
+- in-memory cache with TTL.
 
 ## Interface
 
-- Layout responsivo para desktop e mobile;
-- busca com feedback de carregamento;
-- filtros locais por preço mínimo, preço máximo e avaliação mínima;
-- contador consistente após filtros;
-- scroll progressivo para renderização dos cards;
-- modo claro/escuro com persistência;
-- retry manual para repetir a última busca tentada;
-- tratamento amigável de erros HTTP e falhas externas;
-- status discreto da API com `API online` ou `API indisponível`;
-- footer com ano dinâmico.
+- Responsive layout for desktop and mobile;
+- search with loading feedback;
+- local filters for minimum price, maximum price, and minimum rating;
+- consistent counter after filtering;
+- progressive scrolling for card rendering;
+- light/dark mode with persistence;
+- manual retry to repeat the last attempted search;
+- user-friendly handling of HTTP errors and external failures;
+- discreet API status showing `API online` or `API unavailable`;
+- footer with a dynamic year.
 
+## Observability, performance, and security
 
-## Observabilidade, desempenho e segurança
-
-- Endpoint de health check;
-- endpoint de métricas mantido no backend;
-- rate limit para mitigar abuso;
-- headers de segurança com Helmet;
-- compressão das respostas;
-- registro de requisições;
-- validação dos parâmetros de entrada;
-- tratamento centralizado de erros.
+- Health check endpoint;
+- metrics endpoint maintained by the backend;
+- rate limiting to mitigate abuse;
+- security headers with Helmet;
+- response compression;
+- request logging;
+- input parameter validation;
+- centralized error handling.
 
 ## Endpoints
 
@@ -77,22 +74,22 @@ O frontend consome a API e apresenta os produtos em uma grade responsiva. No bac
 GET /api
 GET /api/health
 GET /api/metrics
-GET /api/scrape?keyword=produto
+GET /api/scrape?keyword=product
 ```
 
-O parâmetro `keyword` define o termo utilizado na pesquisa dos produtos.
+The `keyword` parameter defines the term used to search for products.
 
 ## Interface
 
 ## Desktop
 
-![Interface desktop do Amazon Scraper](docs/images/resultados-desktop.png)
+![Amazon Scraper desktop interface](docs/images/resultados-desktop.png)
 
 ## Mobile
 
-![Interface mobile do Amazon Scraper](docs/images/resultados-mobile.png)
+![Amazon Scraper mobile interface](docs/images/resultados-mobile.png)
 
-## Tecnologias
+## Technologies
 
 ## Backend
 
@@ -113,106 +110,106 @@ O parâmetro `keyword` define o termo utilizado na pesquisa dos produtos.
 - Vitest;
 - JSDOM.
 
-## Como executar
+## How to run
 
-## Pré-requisitos
+## Prerequisites
 
 - Git;
 - Node.js `^20.19.0 || >=22.12.0`;
 - npm.
 
-## Clonar o repositório
+## Clone the repository
 
 ```powershell
 git clone https://github.com/NatanLuz/amazon_scraper_fullstackAPI.git
 cd amazon_scraper_fullstackAPI
 ```
 
-### Instalar as dependências
+### Install the dependencies
 
-Na raiz, instale as dependências do backend e do frontend de forma reproduzível com os lockfiles:
+From the root directory, install the backend and frontend dependencies reproducibly using the lockfiles:
 
 ```powershell
 npm run install-all
 ```
 
-Para instalar separadamente, use `npm run install-server` e `npm run install-client`.
+To install them separately, use `npm run install-server` and `npm run install-client`.
 
-### Executar em desenvolvimento
+### Run in development
 
-Em um terminal, inicie o backend:
+In one terminal, start the backend:
 
 ```powershell
 npm run dev
 ```
 
-Em outro terminal, inicie o frontend:
+In another terminal, start the frontend:
 
 ```powershell
 cd client
 npm run dev
 ```
 
-A interface ficará disponível em:
+The interface will be available at:
 
 ```text
 http://localhost:5173
 ```
 
-A API ficará disponível em:
+The API will be available at:
 
 ```text
 http://localhost:3000
 ```
 
-### Executar build de produção
+### Run a production build
 
-Para compilar o frontend e servi-lo pelo backend:
+To build the frontend and serve it through the backend:
 
 ```powershell
 npm run build
 npm start
 ```
 
-Depois do build, a aplicação fica disponível em `http://localhost:3000`.
+After the build, the application will be available at `http://localhost:3000`.
 
-`npm run build:prod` reutiliza o build sem instalar dependências. `npm run deploy` compila e inicia localmente; não publica em uma plataforma externa.
+`npm run build:prod` reuses the build without installing dependencies. `npm run deploy` builds and starts the application locally; it does not publish it to an external platform.
 
-## Testes
+## Tests
 
-Execute os testes do backend:
+Run the backend tests:
 
 ```powershell
 npm run test:backend
 ```
 
-Execute os testes do frontend:
+Run the frontend tests:
 
 ```powershell
 cd client
 npm test -- --run
 ```
 
-Estado atual validado:
+Current validated status:
 
-- backend: 9 testes;
-- frontend: 14 testes;
+- backend: 9 tests;
+- frontend: 14 tests;
 - total: 23/23;
-- build do client: OK;
-- build pela raiz: OK.
+- client build: OK;
+- root build: OK.
 
-## Verificação funcional
+## Functional verification
 
-Após iniciar backend e frontend:
+After starting the backend and frontend:
 
-1. Realize uma busca por palavra-chave;
-2. verifique cards, imagens, preços, avaliações, reviews e links;
-3. aplique filtros de preço e avaliação;
-4. confirme o contador de resultados;
-5. teste o retry manual após uma falha simulada ou real;
-6. confirme o status `API online` ou `API indisponível`.
+1. Perform a keyword search;
+2. check cards, images, prices, ratings, reviews, and links;
+3. apply price and rating filters;
+4. confirm the results counter;
+5. test the manual retry after a simulated or actual failure;
+6. confirm the `API online` or `API unavailable` status.
 
-## Estrutura do projeto
+## Project structure
 
 ```text
 amazon_scraper_fullstackAPI/
@@ -225,21 +222,23 @@ amazon_scraper_fullstackAPI/
 └── ...
 ```
 
-- `server/`: API REST, scraping, cache, métricas e middlewares;
-- `client/`: interface web desenvolvida com Vite, Tailwind CSS e JavaScript;
-- `client/src/__tests__/`: testes automatizados executados com Vitest;
-- `docs/images/`: screenshots locais usadas na documentação;
-- `package.json`: dependências e scripts do projeto;
-- `README.md`: documentação técnica principal.
+- `server/`: REST API, scraping, cache, metrics, and middleware;
+- `client/`: web interface developed with Vite, Tailwind CSS, and JavaScript;
+- `client/src/__tests__/`: automated tests run with Vitest;
+- `docs/images/`: local screenshots used in the documentation;
+- `package.json`: project dependencies and scripts;
+- `README.md`: main technical documentation.
 
-## Autor
+## Author
 
 **Natan Da Luz**
 
-- LinkedIn: [linkedin.com/in/natandaluz](https://www.linkedin.com/in/natandaluz/)
-- Portfólio: [portfolionatan.vercel.app](https://portfolionatan.vercel.app/)
+- LinkedIn: [linkedin.com/in/natandaluz](https://www.linkedin.com/in/natandaluz/) 
+
+- Portfolio: [portfolionatan.vercel.app](https://portfolionatan.vercel.app/)
+
 - E-mail: [natandaluz01@gmail.com](mailto:natandaluz01@gmail.com)
 
-## Licença
+## License
 
-Este projeto está sem uma licença definida no momento.
+This project does not currently have a defined license.
